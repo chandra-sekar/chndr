@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/chandra-sekar/chndr/issues"
   },
-  "homepage": "https://github.com/chandra-sekar/chndr#readme"
+  "homepage": "https://github.com/chandra-sekar/chndr#readme",
+  "devDependencies": {
+    "@11ty/eleventy": "^0.7.1"
+  }
 }
