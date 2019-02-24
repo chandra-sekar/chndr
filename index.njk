@@ -1,0 +1,7 @@
+---
+layout: layouts/home.njk
+---
+
+{% set postslist = collections.posts | head(-10) %}
+
+{% include "postslist.njk" %}
