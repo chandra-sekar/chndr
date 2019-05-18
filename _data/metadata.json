@@ -1,0 +1,16 @@
+{
+  "title": "Chandrasekar | Front-end developer",
+  "url": "https://chndr.cc/",
+  "description": "I am writing about my experiences as a Front-end developer.",
+  "feed": {
+    "subtitle": "I am writing about my experiences as a Front-end developer.",
+    "filename": "feed.xml",
+    "path": "/feed/feed.xml",
+    "url": "https://chndr.cc/feed/feed.xml",
+    "id": "https://chndr.cc/"
+  },
+  "author": {
+    "name": "Chandrasekar",
+    "email": "chander@chndr.cc"
+  }
+}
