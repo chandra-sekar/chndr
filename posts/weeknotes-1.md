@@ -1,5 +1,5 @@
 ---
-title: Week notes 1
+title: Week notes1
 date: 2019-06-07
 layout: layouts/post.njk
 ---
