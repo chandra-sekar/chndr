@@ -11,4 +11,4 @@ Okay, I am thinking of making a habit of writing week notes whenever I can.
 - On the other hand, I got pretty excited by the announcement of iPadOS. I love my iPad. I convinced myself to get it last year thinking it would somehow lead to better productivity. I resolved to use it only for note taking and reading and ended up not at all using the device that much at first. I later got to really love it as a consumption device. It is probably one of the favorite things I own. 
 - I installed the developer beta of iPadOS with a friend's account and now I am just playing with all the new features. Using a mouse on the iPad was pretty cool. 
 - I also ended up getting a Dual Shock controller from someone on OLX. Looking forward to using it to play games more often on the iPad.
-- I am going to cut this update short because I am nearly out of time and Beeminder will charge me $10 if I don't post this now!
+- I am going to cut this update short because I am nearly out of time and Beeminder will charge me $10 if I don't post this now.
