@@ -5,8 +5,9 @@
 	<meta name="yandex-verification" content="42be23c126782e27" />
 	<link rel="alternate" href="https://chndr.cc/feed/feed.xml" type="application/rss+xml" title="Chander writes about front-en development">
 	<title>Chandrasekar | Front-end developer</title>
-		<meta name="viewport" content="width=device-width">
-		<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/tufte-css/1.4/tufte.min.css">
+	<meta name="viewport" content="width=device-width">
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/tufte-css/1.4/tufte.min.css">
+	<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
 <h1>Hi, I am Chandrasekar, a front-end developer.</h1>
@@ -31,5 +32,16 @@
 	</div>
 	
 </footer>
+<script>
+  if (window.netlifyIdentity) {
+    window.netlifyIdentity.on("init", user => {
+      if (!user) {
+        window.netlifyIdentity.on("login", () => {
+          document.location.href = "/admin/";
+        });
+      }
+    });
+  }
+</script>
 </body>
 </html>
