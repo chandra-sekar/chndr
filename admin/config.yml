@@ -1,6 +1,7 @@
 backend:
   name: git-gateway
 media_folder: "img"
+site_url: "https://chndr.cc"
 collections:
   - name: "posts"
     label: "Posts"
