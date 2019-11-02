@@ -1,6 +1,6 @@
 ---
-title: Week notes 2
-date: 2019-06-24
+title: 'Week notes 2: Cult fitness'
+date: 2019-06-24T00:00:00.000Z
 layout: layouts/post.njk
 ---
 
