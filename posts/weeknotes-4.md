@@ -1,6 +1,6 @@
 ---
-title: Week notes 4
-date: 2019-07-15
+title: 'Week notes 4: Battlestar Galactica'
+date: 2019-07-15T00:00:00.000Z
 layout: layouts/post.njk
 ---
 
