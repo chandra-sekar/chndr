@@ -1,5 +1,5 @@
 ---
-title: Week notes 6
+title: 'Week notes 6: Netlify CMS'
 date: 2019-07-31T16:34:11.649Z
 layout: layouts/post.njk
 ---
