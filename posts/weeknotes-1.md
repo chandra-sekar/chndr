@@ -1,6 +1,6 @@
 ---
-title: Week notes 1
-date: 2019-06-07
+title: 'Week notes 1: WWDC'
+date: 2019-06-07T00:00:00.000Z
 layout: layouts/post.njk
 ---
 
