@@ -1,6 +1,6 @@
 ---
-title: Week notes 5
-date: 2019-07-21
+title: 'Week notes 5: Prince of Egypt'
+date: 2019-07-21T00:00:00.000Z
 layout: layouts/post.njk
 ---
 
