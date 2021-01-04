@@ -1,5 +1,5 @@
 ---
-title: The personal history of David Copperfield
+title: The Personal History of David Copperfield
 date: 2020-08-09T11:14:26.037Z
 layout: layouts/post.njk
 ---
