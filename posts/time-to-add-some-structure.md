@@ -5,6 +5,7 @@ layout: layouts/post.njk
 ---
 
 I have reached a point where writing new content is getting unwieldly. I have to keep adding markup and dates for all the content manually, and the page is getting too lengthy. Time to give the computer some work :)
+---
 
 A good static site generator should take care of a lot of this stuff. Now, I have been in this situation before, and I don't want to get stuck in this loop again.
 

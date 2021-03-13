@@ -5,6 +5,7 @@ layout: layouts/post.njk
 ---
 
 It is another Monday and here are the week notes from the past week
+---
 
 - I am cheating and including something from this morning in last week's notes. I attended Ramesh's wedding today. I thought he would be one of the last people in the school gang to get married, so it was quite a surprise when he announced it to everyone last week. It was a simple wedding in a small hall. No reception or any other rubbish. I appreciated how the whole thing was conducted without any fuss. Both of them looked happy. I am happy for them.
 

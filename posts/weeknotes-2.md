@@ -5,6 +5,7 @@ layout: layouts/post.njk
 ---
 
 I skipped a week. But here are the week notes from last week.
+---
 
 - I am writing this on Monday morning instead of Friday evening like I intended. The first thing I am noticing is how tough it is to recollect events from even the past week. It's not like I am old, but it seems like the brain really likes to put things in a drawer as soon as it can and forget about it.
 

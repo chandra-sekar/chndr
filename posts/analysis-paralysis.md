@@ -5,6 +5,7 @@ layout: layouts/post.njk
 ---
 
 It's been nearly two years since I got this domain with the intention of setting up a personal website/blog. I have since then been thinking of different ways to set it up. This is just a long winding post that describes what I have tried so far. I am writing this mostly so that I have some content to work with, instead of just Lorem Ipsum.
+---
 
 I knew I pretty much wanted to build a website that followed <a href="https://indiewebify.me/" target="_blank">IndieWeb principles</a>. I found the movement intriguing. Being able to write on my own domain and syndicate this content to third party silos like Twitter and Medium was the main draw. I loved what Jeremy Keith was doing at <a href="https://adactio.com" target="_blank">adactio.com</a>
 

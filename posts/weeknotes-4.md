@@ -5,6 +5,7 @@ layout: layouts/post.njk
 ---
 
 This one is going to be short, so here it goes
+---
 
 - I managed to stick to a morning routine for most of last week. I got ample sleep and managed to not put on any weight, so that's good. I have been attending classes at Cult daily. As I posted last week, our water is being rationed and we get running water only till 9:30AM in the morning. This has proven to be a good thing because I am forced to finish my bath early and this gives me more quality time in the morning because I cannot sleep again after having my bath.
 

@@ -1,0 +1,8 @@
+---
+layout: layouts/page.njk
+title: Journal
+---
+
+{% set postslist = collections.posts | head(-5) %}
+
+{% include "postslist.njk" %}

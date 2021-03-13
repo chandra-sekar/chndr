@@ -66,6 +66,11 @@ module.exports = function(eleventyConfig) {
     }
   });
 
+  eleventyConfig.setFrontMatterParsingOptions({ excerpt: true })
+  eleventyConfig.addFilter('toHTML', str => {
+    return new markdownIt(options).renderInline(str)
+  })
+
   return {
     templateFormats: [
       "md",
