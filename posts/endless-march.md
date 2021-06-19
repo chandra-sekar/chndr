@@ -5,7 +5,7 @@ layout: layouts/post.njk
 ---
 This year was supposed to be the year things got better. I don't want to sound all gloomy but I figured I should record my thoughts as I sit in the middle of the pandemic. 
 
-\---
+---
 
 We had a second wave of the pandemic in India and this one turned out to be deadlier than the first one we had last year. As I write this, things have settled down somewhat. All the affected states imposed a lockdown which worked in bringing down the number of cases. But almost everyone I know has lost someone in their circle. I am just tired. I think that is the feeling I see everywhere around me. Everyone is just tired. Tired of monitoring the news, being on high alert, and being cooped up at home. But I'll take this any day over running between hospitals, losing a job or losing a loved one. Lot of people have not been as fortunate as I am.
 
