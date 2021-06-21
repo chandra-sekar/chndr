@@ -3,7 +3,7 @@ title: On switching to Raycast
 date: 2021-06-19T04:49:49.462Z
 layout: layouts/post.njk
 ---
-I am a big fan of the command palette UI pattern. So much so, that I am sure `cmd+k` in Slack, `cmd+p` in Sublime text, and `cmd+space` for Alfred are my three most used keyboard shortcuts on a daily basis. You can read more about this pattern in this nice blog post that describes it along with examples - [Command Palette Interfaces ](https://philipcdavis.com/writing/command-palette-interfaces)
+I am a big fan of the command palette UI pattern. So much so that I am sure `cmd+k` in Slack, `cmd+p` in Sublime text, and `cmd+space` for Alfred are my three most used keyboard shortcuts on a daily basis. You can read more about this pattern in this nice blog post that describes it along with examples - [Command Palette Interfaces ](https://philipcdavis.com/writing/command-palette-interfaces)
 
 My first introduction to a command palette was with [Quick Silver](https://qsapp.com) on Mac OSX Tiger. It was quickly replaced by [Alfred](https://www.alfredapp.com). The pattern became popular enough for Apple to change Spotlight's UI with Yosemite.
 
@@ -18,10 +18,10 @@ One big reason was because I did not have to change my daily habit of pressing `
 
 The plot twist is, Raycast is potentially replacing a number of apps I use on a daily basis. Not just Alfred. It replaces the following utilities which I use:
 
-- A clipboard manager (Replaces Jumpcut)
-- A window manager (Replaces Rectangle)
-- A plain text calculator (Kind of replaces Numi/Soulver. For example, lets you type '23 is what % of 524' to get the answer)
-- A scratch pad for notes (Replaces Tyke)
+* A clipboard manager (Replaces Jumpcut)
+* A window manager (Replaces Rectangle)
+* A plain text calculator (Kind of replaces Numi/Soulver. For example, lets you type '23 is what % of 524' to get the answer)
+* A scratch pad for notes (Replaces Tyke)
 
 I am sure they have more upcoming. I think what Raycast has done is look at the 'greatest hits' list of mac utilities and try to build it all within a single app. And it simply works. They also offer some deep integration with services like Github with nested commands and actions. They also seem to offer a developer API which I want to try using sometime. Earlier, someone had to be a tweaker and keep hunting for these utilities and try them out of their own interest. Now everything comes neatly packaged in a well integrated whole. In an ideal world, all the above utilities would be standard operating system features but our tech overlords nowadays are more interested in building more marketable features. Needless to say, I highly recommend Raycast.
 
