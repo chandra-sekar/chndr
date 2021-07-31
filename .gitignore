@@ -1,3 +1,6 @@
 _site/
 node_modules/
 .nova/
+chndr.code-workspace
+website.sublime-project
+website.sublime-workspace
