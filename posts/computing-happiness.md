@@ -7,6 +7,8 @@ Computing Happiness
 
 The first computer I met was in my school's computer lab. It was the only room in our school that was air conditioned and we were not allowed to wear our shoes inside the lab for whatever reason. To be honest, I am unable to recall my exact feeling when we were introduced to the black & white command prompt and taught to write our first program in LOGO. But I do remember feeling excited to be in the room because the lab was off limits until we were in class 4 or something. It was quiet and we were allowed to talk only in hushed tones. For me, the air conditioning was probably a bigger draw than the computers themselves.
 
+---
+
 Starting there, these have been the highlights of my life with computers. Or rather, these are the things that I remember with fondness (Some of the timeline is probably not in order)
 
 * Prince of Persia

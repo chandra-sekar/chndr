@@ -1,5 +1,5 @@
 <main class="postlist">
-{% for post in postslist | reverse %}
+{% for post in postslist %}
   <section class="h-entry postlist-item{% if post.url == url %} postlist-item-active{% endif %}">
       <h2><a href="{{ post.url | url }}" class="postlist-link p-name">{% if post.data.title %}{{ post.data.title }}{% else %}<code>{{ post.url }}</code>{% endif %}</a></h2>
       <time class="postlist-date dt-published" datetime="{{ post.date | htmlDateString }}">{{ post.date | readableDate }}</time>

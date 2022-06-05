@@ -1,8 +1,20 @@
 ---
 layout: layouts/page.njk
 title: Journal
+pagination:
+  data: collections.posts
+  size: 5
+  reverse: true
 ---
 
-{% set postslist = collections.posts | head(-5) %}
+{% set postslist = pagination.items %}
 
 {% include "postslist.njk" %}
+
+{% if pagination.href.previous.length %}
+	<a href="{{ pagination.href.previous }}">Previous page</a>
+{% endif %}
+
+{% if pagination.href.next.length %}
+	<a href="{{ pagination.href.next }}">Next page</a>
+{% endif %}
