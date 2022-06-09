@@ -1,0 +1,19 @@
+---
+permalink: feed/feed-notes.json
+eleventyExcludeFromCollections: true
+---
+[
+{% for note in collections.notes %}
+  {% set absolutePostUrl %}{{ note.url | url | absoluteUrl(metadata.url) }}{% endset %}
+  {
+    "id": {{ loop.revindex }},
+    "date": "{{ note.date }}",
+    "url": "{{ note.url | url | absoluteUrl(site.url) }}",
+    "content": "{{ note.templateContent | safe | striptags }}",
+    "link": "{{ absolutePostUrl }}",
+    "tags": "{{ note.data.tags }}",
+    "syndicate": {{ note.data.syndicate }}
+  }
+  {%- if not loop.last -%},{%- endif -%}
+{% endfor %}
+]

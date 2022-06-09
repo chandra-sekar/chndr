@@ -2,6 +2,14 @@
 layout: layouts/home.njk
 ---
 
+<div class="h-card">
+	<p class="p-note">Hello, I am <span class="p-name">Chandrasekar</span> — a <span class="p=-job-title">front-end developer</span> and interaction designer building products on the web. Originally from Chennai, India I now live and work out of <span>Subang Jaya</span>, <span>Malaysia</span>.</p>
+
+	<p>Welcome to my cozy space on the internet. I write ocassionally on my <a href="/journal">journal</a> and post short musings and links as <a href="/notes">notes</a>. You are welcome to hang out by my <a href="/bookshelf">bookshelf</a> which is a collection of my favorite stuff. You can <a href="mailto:chandrasekar@gmx.com">write to me</a> if you want to say hi or share a recommendation.</p>
+</div>
+
+<h2>A few selected posts from my Journal</h2>
+
 {% set postslist = collections.posts | head(-5) | reverse %}
 
 {% include "postslist.njk" %}

@@ -1,0 +1,21 @@
+---
+layout: layouts/base.njk 
+pagination:
+  data: collections.notes
+  size: 5
+  reverse: true
+---
+
+<h2>Notes</h2>
+{% set noteslist = pagination.items %}
+
+{% include "noteslist.njk" %}
+
+{% if pagination.href.previous.length %}
+	<a href="{{ pagination.href.previous }}">Previous page</a>
+{% endif %}
+
+{% if pagination.href.next.length %}
+	<a href="{{ pagination.href.next }}">Next page</a>
+{% endif %}
+
