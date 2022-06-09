@@ -20,7 +20,7 @@ eleventyExcludeFromCollections: true
 {% for note in collections.notes %}
   {% set absolutePostUrl %}{{ note.url | url | absoluteUrl(metadata.url) }}{% endset %}
   {
-    "id": {{ absolutePostUrl }},
+    "id": "{{ absolutePostUrl }}",
     "date_published": "{{ note.date }}",
     "url": "{{ absolutePostUrl }}",
     "content": "{{ note.templateContent | safe | striptags }}",
