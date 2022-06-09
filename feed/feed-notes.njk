@@ -2,7 +2,21 @@
 permalink: feed/feed-notes.json
 eleventyExcludeFromCollections: true
 ---
-[
+{
+"version": "https://jsonfeed.org/version/1.1",
+"title": "Chandrasekar - Front-end Developer",
+"description": "The personal website of Chandrasekar",
+"home_page_url": "https://chndr.cc",
+"feed_url": "https://chndr.cc/feeds/feed-notes.json",
+"language": "en-GB",
+"authors": [
+  {
+    "name": "Chandrasekar",
+    "url": "https://chndr.cc",
+    "avatar": "https://chndr.cc/img/profile-pic.png"
+  }
+], 
+"items": [
 {% for note in collections.notes %}
   {% set absolutePostUrl %}{{ note.url | url | absoluteUrl(metadata.url) }}{% endset %}
   {
@@ -18,3 +32,4 @@ eleventyExcludeFromCollections: true
   {%- if not loop.last -%},{%- endif -%}
 {% endfor %}
 ]
+}
