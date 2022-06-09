@@ -20,14 +20,12 @@ eleventyExcludeFromCollections: true
 {% for note in collections.notes %}
   {% set absolutePostUrl %}{{ note.url | url | absoluteUrl(metadata.url) }}{% endset %}
   {
-    "id": {{ loop.revindex }},
-    "date": "{{ note.date }}",
-    "url": "{{ note.url | url | absoluteUrl(site.url) }}",
+    "id": {{ absolutePostUrl }},
+    "date_published": "{{ note.date }}",
+    "url": "{{ absolutePostUrl }}",
     "content": "{{ note.templateContent | safe | striptags }}",
     "content_html": "{{ note.templateContent | safe | trim }}",
-    "link": "{{ absolutePostUrl }}",
-    "tags": "{{ note.data.tags }}",
-    "syndicate": "{{ note.data.syndicate }}"
+    "tags": "{{ note.data.tags }}"
   }
   {%- if not loop.last -%},{%- endif -%}
 {% endfor %}
