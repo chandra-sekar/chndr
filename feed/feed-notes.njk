@@ -10,6 +10,7 @@ eleventyExcludeFromCollections: true
     "date": "{{ note.date }}",
     "url": "{{ note.url | url | absoluteUrl(site.url) }}",
     "content": "{{ note.templateContent | safe | striptags }}",
+    "content_html": "{{ note.templateContent | safe }}",
     "link": "{{ absolutePostUrl }}",
     "tags": "{{ note.data.tags }}",
     "syndicate": {{ note.data.syndicate }}
