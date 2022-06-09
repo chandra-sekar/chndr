@@ -13,14 +13,13 @@ collections:
       - {label: "Publish Date", name: "date", widget: "datetime"}
       - {label: "Layout", name: "layout", widget: "hidden", default: "layouts/post.njk"}
       - {label: "Body", name: "body", widget: "markdown"}
-
-- name: "notes"
-    label: "Notes"
-    folder: "notes"
-    create: true
-    slug: "{{slug}}"
-    fields: 
-      - {label: "Publish Date", name: "date", widget: "datetime"}
-      - {label: "Layout", name: "layout", widget: "hidden", default: "layouts/note.njk"}
-      - {label: "Tags", name: "tags", widget: "hidden", default: "notes"}
-      - {label: "Body", name: "body", widget: "markdown"}
+  - name: "notes"
+      label: "Notes"
+      folder: "notes"
+      create: true
+      slug: "{{slug}}"
+      fields: 
+        - {label: "Publish Date", name: "date", widget: "datetime"}
+        - {label: "Layout", name: "layout", widget: "hidden", default: "layouts/note.njk"}
+        - {label: "Tags", name: "tags", widget: "hidden", default: "notes"}
+        - {label: "Body", name: "body", widget: "markdown"}
