@@ -7,7 +7,7 @@ eleventyExcludeFromCollections: true
 "title": "Chandrasekar - Front-end Developer",
 "description": "The personal website of Chandrasekar",
 "home_page_url": "https://chndr.cc",
-"feed_url": "https://chndr.cc/feeds/feed-notes.json",
+"feed_url": "https://chndr.cc/feed/feed-notes.json",
 "language": "en-GB",
 "authors": [
   {
@@ -24,10 +24,10 @@ eleventyExcludeFromCollections: true
     "date": "{{ note.date }}",
     "url": "{{ note.url | url | absoluteUrl(site.url) }}",
     "content": "{{ note.templateContent | safe | striptags }}",
-    "content_html": "{{ note.templateContent | safe }}",
+    "content_html": "{{ note.templateContent | safe | trim }}",
     "link": "{{ absolutePostUrl }}",
     "tags": "{{ note.data.tags }}",
-    "syndicate": {{ note.data.syndicate }}
+    "syndicate": "{{ note.data.syndicate }}"
   }
   {%- if not loop.last -%},{%- endif -%}
 {% endfor %}
