@@ -24,7 +24,7 @@ eleventyExcludeFromCollections: true
     "date_published": "{{ note.date }}",
     "url": "{{ absolutePostUrl }}",
     "content": "{{ note.templateContent | safe | striptags }}",
-    "content_html": "{{ note.templateContent | trim | nl2br | formatHTMLForFeed }}",
+    "content_html": "{{ note.templateContent | trim | htmlToAbsoluteUrls(absolutePostUrl) | formatHTMLForFeed }}",
     "tags": "{{ note.data.tags }}"
   }
   {%- if not loop.last -%},{%- endif -%}
