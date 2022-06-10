@@ -15,12 +15,12 @@ collections:
       - {label: "Layout", name: "layout", widget: "hidden", default: "layouts/post.njk"}
       - {label: "Body", name: "body", widget: "markdown"}
   - name: "notes"
-    identifier_field: "date"
     label: "Notes"
     label_singular: "Note"
     folder: "notes"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{hour}}{{minute}}{{second}}"
+    identifier_field: slug
     fields: 
       - {label: "Publish Date", name: "date", widget: "datetime"}
       - {label: "Layout", name: "layout", widget: "hidden", default: "layouts/note.njk"}
