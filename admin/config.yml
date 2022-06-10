@@ -20,10 +20,9 @@ collections:
     folder: "notes"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{hour}}{{minute}}{{second}}"
-    identifier_field: slug
+    identifier_field: body
     fields: 
       - {label: "Publish Date", name: "date", widget: "datetime"}
       - {label: "Layout", name: "layout", widget: "hidden", default: "layouts/note.njk"}
       - {label: "Tags", name: "tags", widget: "hidden", default: "notes"}
-      - {label: "Slug", name: "slug", widget: "string", default: "{{year}}-{{month}}-{{day}}-{{hour}}{{minute}}{{second}}"}
       - {label: "Body", name: "body", widget: "markdown"}
