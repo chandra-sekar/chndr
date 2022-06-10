@@ -15,8 +15,8 @@ collections:
       - {label: "Layout", name: "layout", widget: "hidden", default: "layouts/post.njk"}
       - {label: "Body", name: "body", widget: "markdown"}
   - name: "notes"
+    identifier_field: "date"
     label: "Notes"
-    identifier_field: "{{ fields.slug }}"
     label_singular: "Note"
     folder: "notes"
     create: true
@@ -25,5 +25,4 @@ collections:
       - {label: "Publish Date", name: "date", widget: "datetime"}
       - {label: "Layout", name: "layout", widget: "hidden", default: "layouts/note.njk"}
       - {label: "Tags", name: "tags", widget: "hidden", default: "notes"}
-      - {label: "Slug", name: "slug", widget: "string", default: {{ slug }}}
       - {label: "Body", name: "body", widget: "markdown"}
