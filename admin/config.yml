@@ -5,6 +5,7 @@ site_url: "https://chndr.cc"
 collections:
   - name: "posts"
     label: "Posts"
+    label_singular: "Post"
     folder: "posts"
     create: true
     slug: "{{slug}}"
@@ -15,9 +16,11 @@ collections:
       - {label: "Body", name: "body", widget: "markdown"}
   - name: "notes"
     label: "Notes"
+    identifier_field: name 
+    label_singular: "Note"
     folder: "notes"
     create: true
-    slug: "{{slug}}"
+    slug: "{{year}}-{{month}}-{{day}}-{{hour}}{{minute}}{{second}}"
     fields: 
       - {label: "Publish Date", name: "date", widget: "datetime"}
       - {label: "Layout", name: "layout", widget: "hidden", default: "layouts/note.njk"}
