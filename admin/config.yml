@@ -16,7 +16,7 @@ collections:
       - {label: "Body", name: "body", widget: "markdown"}
   - name: "notes"
     label: "Notes"
-    identifier_field: date 
+    identifier_field: slug 
     label_singular: "Note"
     folder: "notes"
     create: true
