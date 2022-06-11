@@ -21,7 +21,7 @@ module.exports = function(eleventyConfig) {
 
   eleventyConfig.addFilter('formatHTMLForFeed', (value) => {
     value = value.replace(/(\r\n|\n|\r)/gm, "");
-    value = value.replace(/"/g, "&quot;")
+    value = JSON.stringify(value)
     return value
   })
 
