@@ -1,13 +1,10 @@
 <main class="noteslist">
 {% for note in noteslist %}
   <section class="h-entry noteslist-item{% if note.url == url %} noteslist-item-active{% endif %}">
-
-     <a href="{{ note.url | url }}">
-        <time class="noteslist-date dt-published" datetime="{{ note.date | htmlDateString }}">{{ note.date | readableDate }}</time>
-     </a>
-            
-        {{ note.templateContent | safe }}
-
+    {{ note.templateContent | safe }}
+    <a href="{{ note.url | url }}">
+      <time class="noteslist-date dt-published" datetime="{{ note.date | htmlDateString }}">{{ note.date | readableDate }}</time>
+    </a>
 
     {% for tag in note.data.tags %}
       {%- if tag != "notes" -%}
