@@ -5,7 +5,7 @@
       <time class="postlist-date dt-published" datetime="{{ post.date | htmlDateString }}">{{ post.date | readableDate }}</time>
       
       {%- if post.data.page.excerpt -%}
-        <p>{{ post.data.page.excerpt | toHTML | safe }} &hellip;</p>
+        <p>{{ post.data.page.excerpt | toHTML | safe }}</p>
         <a href="{{ post.url | url }}">Continue reading</a>
       {%- else -%}
         {{ post.templateContent | safe }}

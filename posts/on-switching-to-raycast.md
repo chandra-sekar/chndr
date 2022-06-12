@@ -4,9 +4,7 @@ date: 2021-06-19T04:49:49.462Z
 layout: layouts/post.njk
 ---
 I am a big fan of the command palette UI pattern. So much so that I am sure `cmd+k` in Slack, `cmd+p` in Sublime text, and `cmd+space` for Alfred are my three most used keyboard shortcuts on a daily basis. You can read more about this pattern in this nice blog post that describes it along with examples - [Command Palette Interfaces ](https://philipcdavis.com/writing/command-palette-interfaces)
-
 ---
-
 My first introduction to a command palette was with [Quick Silver](https://qsapp.com) on Mac OSX Tiger. It was quickly replaced by [Alfred](https://www.alfredapp.com). The pattern became popular enough for Apple to change Spotlight's UI with Yosemite.
 
 I have been using Alfred for more than five years and would have counted myself a loyalist if anyone had asked me. Alfred offers a lot of functionality as part of its paid power pack which I never ended up using. My usage was limited to using it as an app launcher and to execute some basic commands like force quitting apps. I had also set up some shortcuts to open some frequently visited web apps. It was one of my most used apps and I had no problems with Alfred whatsoever.
