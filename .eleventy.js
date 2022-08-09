@@ -2,6 +2,8 @@ const { DateTime } = require("luxon");
 const fs = require("fs");
 const pluginRss = require("@11ty/eleventy-plugin-rss");
 const pluginSyntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
+const sass = require("sass");
+const path = require("node:path");
 module.exports = function (eleventyConfig) {
   eleventyConfig.addPlugin(pluginRss);
   eleventyConfig.addPlugin(pluginSyntaxHighlight);
@@ -38,7 +40,7 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addCollection("tagList", require("./_11ty/getTagList"));
 
   eleventyConfig.addPassthroughCopy("img");
-  eleventyConfig.addPassthroughCopy("css");
+  // eleventyConfig.addPassthroughCopy("css");
   eleventyConfig.addPassthroughCopy("admin/config.yml");
   eleventyConfig.addPassthroughCopy("*.(jpg|png|svg|ico)");
   eleventyConfig.addNunjucksAsyncShortcode(
@@ -82,6 +84,31 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.setFrontMatterParsingOptions({ excerpt: true });
   eleventyConfig.addFilter("toHTML", (str) => {
     return new markdownIt(options).renderInline(str);
+  });
+  eleventyConfig.addTemplateFormats("scss");
+  eleventyConfig.addExtension("scss", {
+    outputFileExtension: "css",
+    compile: async function (inputContent, inputPath) {
+      let parsed = path.parse(inputPath);
+      // if (parsed.name.startsWith("_")) {
+      //   return;
+      // }
+      let result = sass.compileString(inputContent, {
+        loadPaths: [parsed.dir || ".", this.config.dir.includes],
+      });
+      return async (data) => {
+        return result.css;
+      };
+    },
+    compileOptions: {
+      cache: false,
+      permalink: function (contents, inputPath) {
+        let parsed = path.parse(inputPath);
+        if (parsed.name.startsWith("_")) {
+          return false;
+        }
+      },
+    },
   });
 
   return {
