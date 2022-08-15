@@ -1,4 +1,4 @@
-<main class="noteslist">
+<div class="noteslist">
 {% for note in noteslist %}
   <section class="h-entry noteslist-item{% if note.url == url %} noteslist-item-active{% endif %}">
     {{ note.templateContent | safe }}
@@ -19,4 +19,4 @@
     {% endfor %}
   </section>
 {% endfor %}
-</main>
+</div>

@@ -1,0 +1,37 @@
+header,
+footer {
+	width: var(--container-width);
+	margin: var(--container-margin);
+}
+main {
+	width: var(--container-width);
+	margin: var(--container-margin);
+}
+
+nav > ul {
+	list-style: none;
+	padding: 0;
+	display: flex;
+	gap: 16px;
+}
+
+p {
+	margin-top: 1rem;
+}
+
+h1,
+h2 {
+	margin-top: 1em;
+}
+hr {
+	width: var(--container-width);
+}
+a {
+	text-decoration-color: var(--color-link-border);
+	color: var(--color-text);
+	text-underline-offset: 0.05em;
+}
+body {
+	color: var(--color-text);
+	background-color: var(--color-bg);
+}
