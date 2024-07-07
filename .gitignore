@@ -4,3 +4,6 @@ node_modules/
 chndr.code-workspace
 website.sublime-project
 website.sublime-workspace
+.envrc
+.direnv/
+.idea/
