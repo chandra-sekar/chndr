@@ -1,15 +1,17 @@
 <div class="noteslist">
 {% for note in noteslist %}
   <section class="h-entry noteslist-item{% if note.url == url %} noteslist-item-active{% endif %}">
-    {{ note.templateContent | safe }}
+   <div> {{ note.templateContent | safe }}
     {%- if note.data.photo -%}
       {% for photo in note.data.photo %}
         <img src="{{ photo.url | url }}">
       {% endfor %}
     {%- endif -%} 
-    <a href="{{ note.url | url }}">
-      <time class="noteslist-date dt-published" datetime="{{ note.date | htmlDateString }}">{{ note.date | readableDate }}</time>
+   </div> 
+    <a href="{{ note.url | url }}" class="noteslist-date">
+      <time class="dt-published" datetime="{{ note.date | htmlDateString }}">{{ note.date | readableDate }}</time>
     </a>
+
 
     {% for tag in note.data.tags %}
       {%- if tag != "notes" -%}

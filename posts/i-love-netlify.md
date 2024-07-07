@@ -2,6 +2,7 @@
 title: I love Netlify
 date: 2019-02-20
 layout: layouts/post.njk
+description: Falling into the pit of success with Netlify
 ---
 
 This page was previously hosted using Github pages. After I added Eleventy, I figured I wanted to serve the page from a different folder, which will contain the static build of the site. This meant I had to either change the name of the build folder in eleventy or do a hack involving Git submodules.

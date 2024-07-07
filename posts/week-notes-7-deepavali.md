@@ -1,12 +1,13 @@
 ---
-title: 'Week notes 7: Deepavali'
+title: "Week notes 7: Deepavali"
 date: 2019-10-28T08:35:54.973Z
 layout: layouts/post.njk
+description: Happy Deepavali!
 ---
+
 I made a resolution to stay away from Sugar last week. It was a pretty brave thing to do considering it was the week of Deepavali and there was bound to be gratuitous sweets everywhere.
 
-Needless to say, I caved in and ate everything. Anyway, with Deepavali out of the way I have resolved to stay away from Sugar going forward. I watched this documentary called [The Truth about Sugar](https://www.youtube.com/watch?v=9E9bnjwQG9s). It is 4 years old and it does not say anything I did not know already but I found the visual approach to sugar interesting. It is definitely worth a watch.
----
+## Needless to say, I caved in and ate everything. Anyway, with Deepavali out of the way I have resolved to stay away from Sugar going forward. I watched this documentary called [The Truth about Sugar](https://www.youtube.com/watch?v=9E9bnjwQG9s). It is 4 years old and it does not say anything I did not know already but I found the visual approach to sugar interesting. It is definitely worth a watch.
 
 I have been into Audio and HiFi lately. I need to write a separate post about it. I got to attend a workshop conducted by Headphone Zone on Saturday. It was a listening workshop where we put on some expensive headphones and had an instructor point out the aspects that we ought to be listening for in a track. I loved the hands-on approach and I do think I have a better grasp of the sound technicalities to look for while listening - Direction, Separation, Dynamic range, Intimacy, Speed and Freequency Response. The Stax setup I was listening to costed 4.5 lakhs (!) and I got a chance to listen to it for a good 2 hours. That was pretty sweet. I feel like I now have a benchmark to compare against.
 

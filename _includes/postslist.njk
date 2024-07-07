@@ -1,15 +1,15 @@
 <div class="postlist">
 {% for post in postslist %}
   <section class="h-entry postlist-item{% if post.url == url %} postlist-item-active{% endif %}">
-      <h2><a href="{{ post.url | url }}" class="postlist-link p-name">{% if post.data.title %}{{ post.data.title }}{% else %}<div>{{ post.url }}</div>{% endif %}</a></h2>
+      <div> 
+        <a href="{{ post.url | url }}" class="postlist-link p-name">{% if post.data.title %}{{ post.data.title }}{% else %}<div>{{ post.url }}</div>{% endif %}</a>
+        {%- if post.data.description -%}
+          <p>{{ post.data.description | toHTML | safe }}</p>
+        {%- else -%}
+          {{ post.templateContent | safe }}
+        {%- endif -%}
+      </div>
       <time class="postlist-date dt-published" datetime="{{ post.date | htmlDateString }}">{{ post.date | readableDate }}</time>
-      
-      {%- if post.data.page.excerpt -%}
-        <p>{{ post.data.page.excerpt | toHTML | safe }}</p>
-        <a href="{{ post.url | url }}">Continue reading</a>
-      {%- else -%}
-        {{ post.templateContent | safe }}
-      {%- endif -%}
 
     {% for tag in post.data.tags %}
       {%- if tag != "posts" -%}
