@@ -3,7 +3,7 @@ layout: layouts/page.njk
 title: About me
 ---
 
-My name’s Chandrasekar. I am a web developer from Chennai, India. I currently live with my wife in Subang Jaya, Malaysia where I work remotely as a lead front-end developer at HappyFox. 
+My name’s Chandrasekar. I am a design engineer based in Sheffield, UK.
 
 My day to day work involves design, building prototypes, a bit of product management and shipping working code to end users. I believe in building working demos/prototypes and iterating based on feedback. Having worked with small teams on building two products from scratch at HappyFox, I believe my happiest work environment is when I am working with small teams and fast feedback loops.
 
