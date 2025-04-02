@@ -5,7 +5,7 @@ layout: layouts/post.njk
 description: The new book from basecamp has a fresh take on shipping good software
 ---
 
-[Shape Up: Stop Running in Circles and Ship Work that Matters](https://basecamp.com/shapeup) is an online free-to-read book by [Basecamp](basecamp.com) that talks about their process of building software. I think it is safe to call it a project management book. Though I don't use Basecamp, I am a fan of their philosophy of building products. I have read their previous books [Rework](https://basecamp.com/books/rework) and [Getting Real](https://basecamp.com/gettingreal). If there is one theme that cuts across all their work - it is the idea of doing away with what is not essential. It could be called a frugal approach to product building, where they aspire to do more with less by questioning what is necessary.
+[Shape Up: Stop Running in Circles and Ship Work that Matters](https://basecamp.com/shapeup) is an online free-to-read book by [Ryan singer](https://feltpresence.com) of [Basecamp](basecamp.com) that talks about their process of building software. I think it is safe to call it a product management book. Though I don't use Basecamp, I am a fan of their philosophy of building products. I have read their previous books [Rework](https://basecamp.com/books/rework) and [Getting Real](https://basecamp.com/gettingreal). If there is one theme that cuts across all their work - it is the idea of doing away with what is not essential. It could be called a frugal approach to product building, where they aspire to do more with less by questioning what is necessary.
 
 In typical Basecamp style, the ideas in the book are broken into small, digestible chunks. The ideas are rather simple, but there is a lot to be learnt from what is excluded.
 
