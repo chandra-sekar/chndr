@@ -1,5 +1,7 @@
 ---
 permalink: feed/feed-notes.json
 eleventyExcludeFromCollections: true
+eleventyImport:
+  collections: ["notes"]
 ---
 {% jsonfeed collections.notes, metadata, 25 %}

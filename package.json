@@ -17,9 +17,9 @@
   },
   "homepage": "https://github.com/chandra-sekar/chndr#readme",
   "devDependencies": {
-    "@11ty/eleventy": "^2.0.1",
-    "@11ty/eleventy-plugin-rss": "^1.1.2",
-    "@11ty/eleventy-plugin-syntaxhighlight": "^4.0.0",
+    "@11ty/eleventy": "^3.1.2",
+    "@11ty/eleventy-plugin-rss": "^2.0.2",
+    "@11ty/eleventy-plugin-syntaxhighlight": "^5.0.0",
     "@types/markdown-it": "^12.2.3",
     "luxon": "^2.4.0",
     "markdown-it": "^13.0.1",
