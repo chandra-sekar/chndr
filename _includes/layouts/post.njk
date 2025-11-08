@@ -3,6 +3,6 @@ layout: layouts/base.njk
 ---
 <section class="h-entry">
 	<h2 class="p-name">{{ title }}</h2>
-	<time class="dt-published" datetime={{ date | htmlDateString }}>{{ date | readableDate }}</time>
+	<time class="dt-published" datetime="{{ date | htmlDateString }}">{{ date | readableDate }}</time>
 		{{ content | safe }}
 </section>
