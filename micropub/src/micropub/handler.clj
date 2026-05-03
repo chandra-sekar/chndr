@@ -22,6 +22,9 @@
     (map? raw)    (or (:html raw) (:text raw))
     :else         nil))
 
+(defn- normalize-vec [v]
+  (when v (if (vector? v) v [v])))
+
 (defn- extract-params [request]
   (let [ct (get-in request [:headers "content-type"] "")]
     (if (str/includes? ct "application/json")
@@ -29,11 +32,14 @@
             props (get data :properties {})]
         {:h       (first (:type data))
          :name    (first (:name props))
-         :content (extract-content (first (:content props)))})
-      (let [params (:params request)]
+         :content (extract-content (first (:content props)))
+         :photo   (not-empty (vec (:photo props)))})
+      (let [params (:params request)
+            raw    (or (get params "photo[]") (get params "photo"))]
         {:h       (get params "h")
          :name    (get params "name")
-         :content (get params "content")}))))
+         :content (get params "content")
+         :photo   (normalize-vec raw)}))))
 
 (defn- handle-micropub-post [request]
   (let [token (bearer-token request)]
@@ -41,10 +47,10 @@
       {:status 401 :body "Unauthorized"}
       (if-not (auth/validate-token token)
         {:status 403 :body "Forbidden"}
-        (let [{:keys [h name content]} (extract-params request)]
+        (let [{:keys [h name content photo]} (extract-params request)]
           (if-not content
             {:status 400 :body "Bad Request: missing content"}
-            (let [result (posts/create-post {:name name :content content})]
+            (let [result (posts/create-post {:name name :content content :photo photo})]
               (if (= :created (:status result))
                 {:status 201
                  :headers {"Location" (:url result)}

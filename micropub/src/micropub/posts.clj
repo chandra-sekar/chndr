@@ -24,14 +24,18 @@
 (defn- iso-now []
   (str (Instant/now)))
 
-(defn build-note [content]
-  (let [ts (quot (System/currentTimeMillis) 1000)
-        date (iso-now)
-        body (str "---\ndate: " date "\n---\n" content "\n")
-        path (str "notes/" ts ".md")
-        url (str "https://chndr.cc/notes/" ts "/")]
-    {:path path :body body :url url
-     :message "Add note via micropub"}))
+(defn build-note
+  ([content] (build-note content nil))
+  ([content photos]
+   (let [ts (quot (System/currentTimeMillis) 1000)
+         date (iso-now)
+         photo-yaml (when (seq photos)
+                      (str "photo:\n" (str/join "\n" (map #(str "  - url: " %) photos)) "\n"))
+         body (str "---\ndate: " date "\n" (or photo-yaml "") "---\n" content "\n")
+         path (str "notes/" ts ".md")
+         url (str "https://chndr.cc/notes/" ts "/")]
+     {:path path :body body :url url
+      :message "Add note via micropub"})))
 
 (defn build-article [name content]
   (let [slug (slugify name)
@@ -66,10 +70,10 @@
       {:status :created :url url}
       {:status :error :http-status status})))
 
-(defn create-post [{:keys [name content]}]
+(defn create-post [{:keys [name content photo]}]
   (let [github-token (System/getenv "GITHUB_TOKEN")
         {:keys [path body url message]} (if (str/blank? name)
-                                          (build-note content)
+                                          (build-note content photo)
                                           (build-article name content))
         payload (json/write-str {:message message
                                  :content (base64 body)
