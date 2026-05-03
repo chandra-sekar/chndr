@@ -15,17 +15,23 @@
       (json/read-str (slurp body) :key-fn keyword)
       (catch Exception _ nil))))
 
+(defn- extract-content [raw]
+  (cond
+    (string? raw) raw
+    (map? raw)    (or (:html raw) (:text raw))
+    :else         nil))
+
 (defn- extract-params [request]
   (let [ct (get-in request [:headers "content-type"] "")]
     (if (str/includes? ct "application/json")
       (let [data (parse-json-body request)
             props (get data :properties {})]
-        {:h    (first (:type data))
-         :name (first (:name props))
-         :content (first (:content props))})
+        {:h       (first (:type data))
+         :name    (first (:name props))
+         :content (extract-content (first (:content props)))})
       (let [params (:params request)]
-        {:h (get params "h")
-         :name (get params "name")
+        {:h       (get params "h")
+         :name    (get params "name")
          :content (get params "content")}))))
 
 (defn- handle-micropub-post [request]
