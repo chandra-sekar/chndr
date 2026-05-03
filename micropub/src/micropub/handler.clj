@@ -3,6 +3,7 @@
             [clojure.string :as str]
             [micropub.auth :as auth]
             [micropub.posts :as posts]
+            [ring.middleware.multipart-params :refer [wrap-multipart-params]]
             [ring.middleware.params :refer [wrap-params]]))
 
 (defn- bearer-token [request]
@@ -50,6 +51,20 @@
                  :body ""}
                 {:status 500 :body "Internal Server Error"}))))))))
 
+(defn- handle-media-post [request]
+  (let [token (bearer-token request)]
+    (if-not token
+      {:status 401 :body "Unauthorized"}
+      (if-not (auth/validate-token token)
+        {:status 403 :body "Forbidden"}
+        (let [file (get-in request [:multipart-params "file"])]
+          (if-not file
+            {:status 400 :body "Bad Request: missing file"}
+            (let [result (posts/commit-media file)]
+              (if (= :created (:status result))
+                {:status 201 :headers {"Location" (:url result)} :body ""}
+                {:status 500 :body "Internal Server Error"}))))))))
+
 (defn handler [request]
   (let [method (:request-method request)
         path (:uri request)
@@ -62,13 +77,17 @@
       (if (= "config" (get (:params request) "q"))
         {:status 200
          :headers {"Content-Type" "application/json"}
-         :body "{}"}
+         :body (json/write-str {"media-endpoint"
+                               "https://chndr-micropub.apps.garden/micropub/media"})}
         {:status 200 :body ""})
 
       (and (= :post method) (= "/micropub" path))
       (handle-micropub-post request)
 
+      (and (= :post method) (= "/micropub/media" path))
+      (handle-media-post request)
+
       :else
       {:status 404 :body "Not Found"})))
 
-(def app (wrap-params handler))
+(def app (-> handler wrap-params wrap-multipart-params))

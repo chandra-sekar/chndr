@@ -1,7 +1,7 @@
 (ns micropub.posts-test
   (:require [clojure.test :refer [deftest is testing]]
             [clojure.string :as str]
-            [micropub.posts :refer [build-note build-article]]))
+            [micropub.posts :refer [build-note build-article build-media]]))
 
 ;; ---------------------------------------------------------------------------
 ;; Note structure
@@ -101,3 +101,28 @@
         filename (-> path (str/split #"/") last (str/replace #"\.md$" ""))]
     (is (not (str/starts-with? filename "-")))
     (is (not (str/ends-with? filename "-")))))
+
+;; ---------------------------------------------------------------------------
+;; Media structure
+;; ---------------------------------------------------------------------------
+
+(deftest media-path-is-under-img-uploads
+  (let [{:keys [path]} (build-media "photo.jpg")]
+    (is (str/starts-with? path "img/uploads/"))))
+
+(deftest media-path-has-timestamp-prefix
+  (let [{:keys [path]} (build-media "photo.jpg")
+        filename (-> path (str/split #"/") last)]
+    (is (re-matches #"\d+-.*" filename))))
+
+(deftest media-path-contains-original-filename
+  (let [{:keys [path]} (build-media "photo.jpg")]
+    (is (str/ends-with? path "photo.jpg"))))
+
+(deftest media-url-points-to-img-uploads
+  (let [{:keys [url]} (build-media "photo.jpg")]
+    (is (str/starts-with? url "https://chndr.cc/img/uploads/"))))
+
+(deftest media-url-does-not-end-with-slash
+  (let [{:keys [url]} (build-media "photo.jpg")]
+    (is (not (str/ends-with? url "/")))))

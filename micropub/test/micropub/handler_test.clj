@@ -1,5 +1,6 @@
 (ns micropub.handler-test
   (:require [clojure.test :refer [deftest is testing]]
+            [clojure.string :as str]
             [micropub.auth :as auth]
             [micropub.handler :refer [app]]
             [micropub.posts :as posts]
@@ -11,6 +12,13 @@
 (defn- success-note-stub [_] {:status :created :url "https://chndr.cc/notes/1234567890/"})
 (defn- success-article-stub [_] {:status :created :url "https://chndr.cc/posts/my-title/"})
 (defn- github-error-stub [_] {:status :error :http-status 422})
+(defn- success-media-stub [_] {:status :created :url "https://chndr.cc/img/uploads/123-photo.jpg"})
+(defn- media-error-stub [_] {:status :error :http-status 422})
+
+(defn- media-request [auth file-map]
+  (-> (mock/request :post "/micropub/media")
+      (mock/header "Authorization" auth)
+      (assoc :multipart-params {"file" file-map})))
 
 ;; ---------------------------------------------------------------------------
 ;; Health check
@@ -40,9 +48,10 @@
   (let [response (app (mock/request :get "/micropub?q=config"))]
     (is (= "application/json" (get-in response [:headers "Content-Type"])))))
 
-(deftest config-query-returns-empty-object
-  (let [response (app (mock/request :get "/micropub?q=config"))]
-    (is (= {} (json/read-str (:body response))))))
+(deftest config-query-contains-media-endpoint
+  (let [body (json/read-str (:body (app (mock/request :get "/micropub?q=config"))))]
+    (is (contains? body "media-endpoint"))
+    (is (str/includes? (get body "media-endpoint") "/micropub/media"))))
 
 (deftest config-query-with-extra-params-still-returns-config
   (let [response (app (mock/request :get "/micropub?q=config&me=https://chndr.cc"))]
@@ -168,3 +177,45 @@
                       (mock/header "Authorization" "Bearer valid-token"))
           response (app request)]
       (is (= 500 (:status response))))))
+
+;; ---------------------------------------------------------------------------
+;; Media endpoint
+;; ---------------------------------------------------------------------------
+
+(def fake-file {:filename "photo.jpg" :content-type "image/jpeg"
+                :tempfile (java.io.File. "/tmp/fake-upload") :size 100})
+
+(deftest media-post-without-token-returns-401
+  (let [request (-> (mock/request :post "/micropub/media")
+                    (assoc :multipart-params {"file" fake-file}))
+        response (app request)]
+    (is (= 401 (:status response)))))
+
+(deftest media-post-with-invalid-token-returns-403
+  (with-redefs [auth/validate-token invalid-token-stub]
+    (is (= 403 (:status (app (media-request "Bearer bad" fake-file)))))))
+
+(deftest media-post-missing-file-returns-400
+  (with-redefs [auth/validate-token valid-token-stub]
+    (let [request (-> (mock/request :post "/micropub/media")
+                      (mock/header "Authorization" "Bearer valid-token")
+                      (assoc :multipart-params {}))
+          response (app request)]
+      (is (= 400 (:status response))))))
+
+(deftest media-post-returns-201
+  (with-redefs [auth/validate-token valid-token-stub
+                posts/commit-media  success-media-stub]
+    (is (= 201 (:status (app (media-request "Bearer valid-token" fake-file)))))))
+
+(deftest media-post-location-header-points-to-img-uploads
+  (with-redefs [auth/validate-token valid-token-stub
+                posts/commit-media  success-media-stub]
+    (let [response (app (media-request "Bearer valid-token" fake-file))]
+      (is (str/starts-with? (get-in response [:headers "Location"])
+                            "https://chndr.cc/img/uploads/")))))
+
+(deftest media-github-failure-returns-500
+  (with-redefs [auth/validate-token valid-token-stub
+                posts/commit-media  media-error-stub]
+    (is (= 500 (:status (app (media-request "Bearer valid-token" fake-file)))))))
