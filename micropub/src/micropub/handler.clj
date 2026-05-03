@@ -3,7 +3,45 @@
             [clojure.string :as str]
             [micropub.auth :as auth]
             [micropub.posts :as posts]
+            [org.httpkit.client :as http]
             [ring.middleware.params :refer [wrap-params]]))
+
+(def ^:private base-url "https://chndr-micropub.apps.garden")
+(def ^:private me-url "https://chndr.cc/")
+
+(defn- handle-token-start [_request]
+  {:status 302
+   :headers {"Location" (str "https://indieauth.com/auth"
+                             "?me=" (java.net.URLEncoder/encode me-url "UTF-8")
+                             "&redirect_uri=" (java.net.URLEncoder/encode (str base-url "/token/callback") "UTF-8")
+                             "&client_id=" (java.net.URLEncoder/encode (str base-url "/") "UTF-8")
+                             "&scope=create+post"
+                             "&response_type=code")}
+   :body ""})
+
+(defn- handle-token-callback [request]
+  (let [code (get (:params request) "code")]
+    (if-not code
+      {:status 400 :body "Missing code"}
+      (let [{:keys [status body]} @(http/post "https://tokens.indieauth.com/token"
+                                              {:form-params {"grant_type"   "authorization_code"
+                                                             "code"         code
+                                                             "redirect_uri" (str base-url "/token/callback")
+                                                             "client_id"    (str base-url "/")
+                                                             "me"           me-url}
+                                               :headers {"Accept" "application/json"}
+                                               :timeout 10000})]
+        (if (= 200 status)
+          (let [data (json/read-str body :key-fn keyword)
+                token (:access_token data)]
+            {:status 200
+             :headers {"Content-Type" "text/html"}
+             :body (str "<html><body style='font-family:monospace;padding:2em'>"
+                        "<h2>Your Bearer token</h2>"
+                        "<p>Copy this token for use in your iOS Shortcut:</p>"
+                        "<textarea rows='4' style='width:100%;font-size:14px'>" token "</textarea>"
+                        "</body></html>")})
+          {:status 500 :body (str "Token exchange failed: " body)})))))
 
 (defn- bearer-token [request]
   (some-> (get-in request [:headers "authorization"])
@@ -76,6 +114,12 @@
 
       (and (= :post method) (= "/micropub" path))
       (handle-micropub-post request)
+
+      (and (= :get method) (= "/token" path))
+      (handle-token-start request)
+
+      (and (= :get method) (= "/token/callback" path))
+      (handle-token-callback request)
 
       :else
       {:status 404 :body "Not Found"}))))
