@@ -57,7 +57,7 @@
     (cond
       (#{:head :get} method)
       (if (= "/micropub" path)
-        (if (= "q=config" query)
+        (if (= "config" (get (:params request) "q"))
           {:status 200
            :headers {"Content-Type" "application/json"}
            :body "{}"}
