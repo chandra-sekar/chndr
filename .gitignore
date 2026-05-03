@@ -7,3 +7,5 @@ website.sublime-workspace
 .envrc
 .direnv/
 .idea/
+micropub/.cpcache/
+micropub/.nrepl-port
