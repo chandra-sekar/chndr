@@ -1,0 +1,15 @@
+(ns micropub.auth
+  (:require [clojure.data.json :as json]
+            [org.httpkit.client :as http]))
+
+(def me-url "https://chndr.cc/")
+
+(defn validate-token [token]
+  (let [{:keys [status body]} @(http/post "https://tokens.indieauth.com/token"
+                                          {:headers {"Accept" "application/json"
+                                                     "Authorization" (str "Bearer " token)}
+                                           :timeout 5000})]
+    (when (= 200 status)
+      (let [data (json/read-str body :key-fn keyword)]
+        (when (= me-url (:me data))
+          data)))))

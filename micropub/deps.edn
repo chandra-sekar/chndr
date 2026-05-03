@@ -1,0 +1,4 @@
+{:deps {http-kit/http-kit {:mvn/version "2.8.0"}
+        org.clojure/data.json {:mvn/version "2.5.0"}
+        ring/ring-core {:mvn/version "1.12.2"}}
+ :aliases {:nextjournal/garden {:exec-fn micropub.core/start}}}
