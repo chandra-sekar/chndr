@@ -184,9 +184,88 @@ The site is configured for deployment on Netlify:
 This site supports IndieWeb standards:
 
 - **Microformats**: h-entry, h-card, dt-published
-- **Micropub**: Endpoint configured in base template
-- **IndieAuth**: Authentication endpoints configured
+- **Micropub**: Endpoint at `https://chndr-micropub.apps.garden/micropub`
+- **IndieAuth**: Authorization via `https://indieauth.com/auth`, tokens via `https://tokens.indieauth.com/token`
 - **rel=me**: Links for identity verification
+
+## Micropub Server
+
+The site accepts posts from any [Micropub](https://micropub.spec.indieweb.org/) client (tested with [Quill](https://quill.p3k.io) and [micropublish](https://micropublish.net)).
+
+### How it works
+
+```
+Micropub client
+    │ POST /micropub (Bearer token)
+    ▼
+chndr-micropub.apps.garden   (Clojure/http-kit on Application Garden)
+    │ Validates token via GET https://tokens.indieauth.com/token
+    │ Creates file via PUT https://api.github.com/repos/chandra-sekar/chndr/contents/...
+    ▼
+GitHub (master branch)
+    │ push triggers Netlify build
+    ▼
+chndr.cc
+```
+
+### Post types
+
+**Note** (no `name` property) — committed to `notes/<unix-timestamp>.md`:
+
+```markdown
+---
+date: 2026-05-03T10:30:00Z
+---
+Content here.
+```
+
+**Article** (has `name` property) — committed to `posts/<slug>.md`:
+
+```markdown
+---
+title: My Article Title
+date: 2026-05-03T10:30:00Z
+layout: layouts/post.njk
+---
+Content here.
+```
+
+### Source
+
+The server lives in `micropub/` and is a standard Clojure deps project:
+
+```
+micropub/
+  deps.edn            # http-kit, data.json, ring-core; :test alias
+  garden.edn          # {:project "chndr-micropub"}
+  src/micropub/
+    core.clj          # starts http-kit on port 7777
+    handler.clj       # Ring routing, request parsing
+    auth.clj          # IndieAuth token validation
+    posts.clj         # file building, GitHub Contents API
+  test/micropub/
+    handler_test.clj  # HTTP behavior tests
+    posts_test.clj    # post content and slug tests
+```
+
+### Deployment
+
+The server runs on [Application Garden](https://application.garden) as `chndr-micropub`. It requires a `GITHUB_TOKEN` secret (fine-grained PAT with Contents write access to this repo).
+
+```bash
+cd micropub
+garden deploy          # deploy latest commit on master
+garden secrets list    # verify GITHUB_TOKEN is set
+```
+
+### Running tests
+
+```bash
+cd micropub
+clojure -X:test
+```
+
+38 behavioral tests covering HTTP routing, authentication, form and JSON post creation, post content structure, and slug generation. External dependencies (IndieAuth, GitHub API) are stubbed.
 
 ## Dependencies
 
