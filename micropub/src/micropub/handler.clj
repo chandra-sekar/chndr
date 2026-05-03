@@ -50,10 +50,20 @@
                  :body ""}
                 {:status 500 :body "Internal Server Error"}))))))))
 
+(defn- log-request [request response]
+  (println (str ">>> " (str/upper-case (name (:request-method request)))
+                " " (:uri request)
+                (when-let [q (:query-string request)] (str "?" q))))
+  (println (str "    headers: " (select-keys (:headers request) ["authorization" "content-type" "accept" "user-agent"])))
+  (println (str "    params: " (:params request)))
+  (println (str "    -> " (:status response)))
+  response)
+
 (defn handler [request]
   (let [method (:request-method request)
         path (:uri request)
         query (:query-string request)]
+    (log-request request
     (cond
       (#{:head :get} method)
       (if (= "/micropub" path)
@@ -68,6 +78,6 @@
       (handle-micropub-post request)
 
       :else
-      {:status 404 :body "Not Found"})))
+      {:status 404 :body "Not Found"}))))
 
 (def app (wrap-params handler))
