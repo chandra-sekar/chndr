@@ -18,7 +18,11 @@
 (defn- extract-params [request]
   (let [ct (get-in request [:headers "content-type"] "")]
     (if (str/includes? ct "application/json")
-      (parse-json-body request)
+      (let [data (parse-json-body request)
+            props (get data :properties {})]
+        {:h    (first (:type data))
+         :name (first (:name props))
+         :content (first (:content props))})
       (let [params (:params request)]
         {:h (get params "h")
          :name (get params "name")
