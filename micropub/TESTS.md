@@ -24,38 +24,38 @@ External calls (`auth/validate-token`, `posts/create-post`) are stubbed with `wi
 
 #### Health check
 
-- [ ] `HEAD /` returns 200
-- [ ] `GET /` returns 200
-- [ ] `GET /unknown-path` returns 404
+- [x] `HEAD /` returns 200
+- [x] `GET /` returns 200
+- [x] `GET /unknown-path` returns 404
 
 #### Micropub config
 
-- [ ] `GET /micropub?q=config` returns 200
-- [ ] `GET /micropub?q=config` returns `Content-Type: application/json`
-- [ ] `GET /micropub?q=config` returns body `{}`
-- [ ] `GET /micropub?q=config&extra=foo` also returns config (extra query params don't break it)
+- [x] `GET /micropub?q=config` returns 200
+- [x] `GET /micropub?q=config` returns `Content-Type: application/json`
+- [x] `GET /micropub?q=config` returns body `{}`
+- [x] `GET /micropub?q=config&extra=foo` also returns config (extra query params don't break it)
 
 #### Authentication
 
-- [ ] `POST /micropub` with no `Authorization` header returns 401
-- [ ] `POST /micropub` with an invalid token returns 403
+- [x] `POST /micropub` with no `Authorization` header returns 401
+- [x] `POST /micropub` with an invalid token returns 403
 
 #### Form-encoded post creation
 
-- [ ] Valid token + `content=...` returns 201
-- [ ] Note (no `name`) returns `Location: https://chndr.cc/notes/<timestamp>/`
-- [ ] Article (`name` + `content`) returns `Location: https://chndr.cc/posts/<slug>/`
-- [ ] Missing `content` returns 400
+- [x] Valid token + `content=...` returns 201
+- [x] Note (no `name`) returns `Location: https://chndr.cc/notes/<timestamp>/`
+- [x] Article (`name` + `content`) returns `Location: https://chndr.cc/posts/<slug>/`
+- [x] Missing `content` returns 400
 
 #### JSON post creation
 
-- [ ] JSON note (`type: h-entry`, no `name` property) returns 201
-- [ ] JSON article (`name` + `content` under `properties`) returns 201
-- [ ] JSON with `content` as `{"html": "..."}` map returns 201 (not 400)
+- [x] JSON note (`type: h-entry`, no `name` property) returns 201
+- [x] JSON article (`name` + `content` under `properties`) returns 201
+- [x] JSON with `content` as `{"html": "..."}` map returns 201 (not 400)
 
 #### GitHub failure
 
-- [ ] When `posts/create-post` returns `:error`, server returns 500
+- [x] When `posts/create-post` returns `:error`, server returns 500
 
 ---
 
@@ -67,15 +67,15 @@ refactored pure helper). Does **not** make real GitHub API calls.
 
 #### Note structure
 
-- [ ] File path matches `notes/<unix-timestamp>.md`
-- [ ] Frontmatter contains `date:` and nothing else
-- [ ] Body follows the frontmatter
+- [x] File path matches `notes/<unix-timestamp>.md`
+- [x] Frontmatter contains `date:` and nothing else
+- [x] Body follows the frontmatter
 
 #### Article structure
 
-- [ ] File path matches `posts/<slug>.md`
-- [ ] Frontmatter contains `title:`, `date:`, and `layout:`
-- [ ] Slug lowercases the title
-- [ ] Slug replaces spaces with hyphens
-- [ ] Slug strips special characters
-- [ ] Body follows the frontmatter
+- [x] File path matches `posts/<slug>.md`
+- [x] Frontmatter contains `title:`, `date:`, and `layout:`
+- [x] Slug lowercases the title
+- [x] Slug replaces spaces with hyphens
+- [x] Slug strips special characters
+- [x] Body follows the frontmatter

@@ -55,13 +55,14 @@
         path (:uri request)
         query (:query-string request)]
     (cond
-      (#{:head :get} method)
-      (if (= "/micropub" path)
-        (if (= "config" (get (:params request) "q"))
-          {:status 200
-           :headers {"Content-Type" "application/json"}
-           :body "{}"}
-          {:status 200 :body ""})
+      (and (#{:head :get} method) (= "/" path))
+      {:status 200 :body ""}
+
+      (and (= :get method) (= "/micropub" path))
+      (if (= "config" (get (:params request) "q"))
+        {:status 200
+         :headers {"Content-Type" "application/json"}
+         :body "{}"}
         {:status 200 :body ""})
 
       (and (= :post method) (= "/micropub" path))

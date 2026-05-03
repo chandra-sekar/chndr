@@ -20,7 +20,7 @@
 (defn- iso-now []
   (str (Instant/now)))
 
-(defn- build-note [content]
+(defn build-note [content]
   (let [ts (quot (System/currentTimeMillis) 1000)
         date (iso-now)
         body (str "---\ndate: " date "\n---\n" content "\n")
@@ -29,7 +29,7 @@
     {:path path :body body :url url
      :message "Add note via micropub"}))
 
-(defn- build-article [name content]
+(defn build-article [name content]
   (let [slug (slugify name)
         date (iso-now)
         body (str "---\ntitle: " name "\ndate: " date "\nlayout: layouts/post.njk\n---\n" content "\n")

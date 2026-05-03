@@ -40,8 +40,8 @@
 
 ## Deployment
 
-- [ ] Register SSH public key with application.garden (web UI → account settings)
-- [ ] Create GitHub PAT with `repo` scope for `chandra-sekar/chndr` and add via `garden secrets add GITHUB_TOKEN`
-- [ ] Deploy with `garden deploy` from the `micropub/` directory
-- [ ] Verify health check passes (`HEAD https://chndr-micropub.apps.garden/`)
+- [x] Register SSH public key with application.garden (web UI → account settings)
+- [x] Create GitHub PAT with `repo` scope for `chandra-sekar/chndr` and add via `garden secrets add GITHUB_TOKEN`
+- [x] Deploy with `garden deploy` from the `micropub/` directory
+- [x] Verify health check passes (`HEAD https://chndr-micropub.apps.garden/`)
 - [ ] Test with a micropub client (e.g. Quill at quill.p3k.io)
