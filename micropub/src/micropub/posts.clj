@@ -30,7 +30,7 @@
    (let [ts (quot (System/currentTimeMillis) 1000)
          date (iso-now)
          photo-yaml (when (seq photos)
-                      (str "photo:\n" (str/join "\n" (map #(str "  - url: " %) photos)) "\n"))
+                      (str "photo:\n" (str/join "\n" (map #(str "  - url: " % "\n    alt: \"\"") photos)) "\n"))
          body (str "---\ndate: " date "\n" (or photo-yaml "") "---\n" content "\n")
          path (str "notes/" ts ".md")
          url (str "https://chndr.cc/notes/" ts "/")]

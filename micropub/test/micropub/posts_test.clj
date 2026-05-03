@@ -51,7 +51,8 @@
 (deftest note-with-photo-includes-photo-frontmatter
   (let [{:keys [body]} (build-note "Hello world" ["https://chndr.cc/img/uploads/123-photo.jpg"])]
     (is (str/includes? body "photo:"))
-    (is (str/includes? body "  - url: https://chndr.cc/img/uploads/123-photo.jpg"))))
+    (is (str/includes? body "  - url: https://chndr.cc/img/uploads/123-photo.jpg"))
+    (is (str/includes? body "    alt: \"\""))))
 
 (deftest note-with-multiple-photos-includes-all-urls
   (let [{:keys [body]} (build-note "Hello world" ["https://chndr.cc/img/uploads/1-a.jpg"
