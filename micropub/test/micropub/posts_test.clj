@@ -48,6 +48,19 @@
   (let [{:keys [body]} (build-note "Hello world")]
     (is (not (str/includes? body "photo:")))))
 
+(deftest note-without-bookmark-has-no-bookmark-of
+  (let [{:keys [body]} (build-note "Hello world")]
+    (is (not (str/includes? body "bookmark-of:")))))
+
+(deftest note-with-bookmark-contains-bookmark-of
+  (let [{:keys [body]} (build-note "Great read" nil "https://example.com/article")]
+    (is (str/includes? body "bookmark-of: https://example.com/article"))))
+
+(deftest note-with-bookmark-and-photo-contains-both
+  (let [{:keys [body]} (build-note "Great read" ["https://chndr.cc/img/uploads/1-a.jpg"] "https://example.com")]
+    (is (str/includes? body "photo:"))
+    (is (str/includes? body "bookmark-of: https://example.com"))))
+
 (deftest note-with-photo-includes-photo-frontmatter
   (let [{:keys [body]} (build-note "Hello world" ["https://chndr.cc/img/uploads/123-photo.jpg"])]
     (is (str/includes? body "photo:"))

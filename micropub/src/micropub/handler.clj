@@ -30,16 +30,18 @@
     (if (str/includes? ct "application/json")
       (let [data (parse-json-body request)
             props (get data :properties {})]
-        {:h       (first (:type data))
-         :name    (first (:name props))
-         :content (extract-content (first (:content props)))
-         :photo   (not-empty (vec (:photo props)))})
+        {:h           (first (:type data))
+         :name        (first (:name props))
+         :content     (extract-content (first (:content props)))
+         :photo       (not-empty (vec (:photo props)))
+         :bookmark-of (first (get props :bookmark-of))})
       (let [params (:params request)
             raw    (or (get params "photo[]") (get params "photo"))]
-        {:h       (get params "h")
-         :name    (get params "name")
-         :content (get params "content")
-         :photo   (normalize-vec raw)}))))
+        {:h           (get params "h")
+         :name        (get params "name")
+         :content     (get params "content")
+         :photo       (normalize-vec raw)
+         :bookmark-of (get params "bookmark-of")}))))
 
 (defn- handle-micropub-post [request]
   (let [token (bearer-token request)]
@@ -47,10 +49,10 @@
       {:status 401 :body "Unauthorized"}
       (if-not (auth/validate-token token)
         {:status 403 :body "Forbidden"}
-        (let [{:keys [h name content photo]} (extract-params request)]
+        (let [{:keys [h name content photo bookmark-of]} (extract-params request)]
           (if-not content
             {:status 400 :body "Bad Request: missing content"}
-            (let [result (posts/create-post {:name name :content content :photo photo})]
+            (let [result (posts/create-post {:name name :content content :photo photo :bookmark-of bookmark-of})]
               (if (= :created (:status result))
                 {:status 201
                  :headers {"Location" (:url result)}

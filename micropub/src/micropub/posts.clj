@@ -25,15 +25,17 @@
   (str (Instant/now)))
 
 (defn build-note
-  ([content] (build-note content nil))
-  ([content photos]
-   (let [ts (quot (System/currentTimeMillis) 1000)
+  ([content] (build-note content nil nil))
+  ([content photos] (build-note content photos nil))
+  ([content photos bookmark-of]
+   (let [ts   (quot (System/currentTimeMillis) 1000)
          date (iso-now)
-         photo-yaml (when (seq photos)
-                      (str "photo:\n" (str/join "\n" (map #(str "  - url: " % "\n    alt: \"\"") photos)) "\n"))
-         body (str "---\ndate: " date "\n" (or photo-yaml "") "---\n" content "\n")
+         photo-yaml    (when (seq photos)
+                         (str "photo:\n" (str/join "\n" (map #(str "  - url: " % "\n    alt: \"\"") photos)) "\n"))
+         bookmark-yaml (when bookmark-of (str "bookmark-of: " bookmark-of "\n"))
+         body (str "---\ndate: " date "\n" (or photo-yaml "") (or bookmark-yaml "") "---\n" content "\n")
          path (str "notes/" ts ".md")
-         url (str "https://chndr.cc/notes/" ts "/")]
+         url  (str "https://chndr.cc/notes/" ts "/")]
      {:path path :body body :url url
       :message "Add note via micropub"})))
 
@@ -70,11 +72,12 @@
       {:status :created :url url}
       {:status :error :http-status status})))
 
-(defn create-post [{:keys [name content photo]}]
+(defn create-post [{:keys [name content photo bookmark-of]}]
   (let [github-token (System/getenv "GITHUB_TOKEN")
-        {:keys [path body url message]} (if (str/blank? name)
-                                          (build-note content photo)
-                                          (build-article name content))
+        {:keys [path body url message]} (cond
+                                          bookmark-of       (build-note content photo bookmark-of)
+                                          (str/blank? name) (build-note content photo)
+                                          :else             (build-article name content))
         payload (json/write-str {:message message
                                  :content (base64 body)
                                  :branch "master"})

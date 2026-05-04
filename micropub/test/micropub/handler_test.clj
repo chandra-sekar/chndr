@@ -219,3 +219,54 @@
   (with-redefs [auth/validate-token valid-token-stub
                 posts/commit-media  media-error-stub]
     (is (= 500 (:status (app (media-request "Bearer valid-token" fake-file)))))))
+
+;; ---------------------------------------------------------------------------
+;; Bookmark / link posts
+;; ---------------------------------------------------------------------------
+
+(defn- success-bookmark-stub [_] {:status :created :url "https://chndr.cc/notes/1234567890/"})
+
+(deftest form-bookmark-returns-201
+  (with-redefs [auth/validate-token valid-token-stub
+                posts/create-post   success-bookmark-stub]
+    (let [request (-> (mock/request :post "/micropub")
+                      (mock/content-type "application/x-www-form-urlencoded")
+                      (mock/body "h=entry&bookmark-of=https%3A%2F%2Fexample.com&content=Great+read")
+                      (mock/header "Authorization" "Bearer valid-token"))
+          response (app request)]
+      (is (= 201 (:status response))))))
+
+(deftest json-bookmark-returns-201
+  (with-redefs [auth/validate-token valid-token-stub
+                posts/create-post   success-bookmark-stub]
+    (let [body (json/write-str {:type ["h-entry"]
+                                :properties {:bookmark-of ["https://example.com"]
+                                             :content ["Great read"]}})
+          request (-> (mock/request :post "/micropub")
+                      (mock/content-type "application/json")
+                      (mock/body body)
+                      (mock/header "Authorization" "Bearer valid-token"))
+          response (app request)]
+      (is (= 201 (:status response))))))
+
+(deftest bookmark-location-header-points-to-notes
+  (with-redefs [auth/validate-token valid-token-stub
+                posts/create-post   success-bookmark-stub]
+    (let [request (-> (mock/request :post "/micropub")
+                      (mock/content-type "application/x-www-form-urlencoded")
+                      (mock/body "h=entry&bookmark-of=https%3A%2F%2Fexample.com&content=Great+read")
+                      (mock/header "Authorization" "Bearer valid-token"))
+          response (app request)]
+      (is (str/starts-with? (get-in response [:headers "Location"])
+                            "https://chndr.cc/notes/")))))
+
+(deftest bookmark-with-name-still-routes-to-notes
+  (with-redefs [auth/validate-token valid-token-stub
+                posts/create-post   success-bookmark-stub]
+    (let [request (-> (mock/request :post "/micropub")
+                      (mock/content-type "application/x-www-form-urlencoded")
+                      (mock/body "h=entry&name=Article+Title&bookmark-of=https%3A%2F%2Fexample.com&content=Great+read")
+                      (mock/header "Authorization" "Bearer valid-token"))
+          response (app request)]
+      (is (str/starts-with? (get-in response [:headers "Location"])
+                            "https://chndr.cc/notes/")))))
