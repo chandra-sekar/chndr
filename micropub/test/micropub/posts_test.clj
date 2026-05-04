@@ -61,6 +61,14 @@
     (is (str/includes? body "photo:"))
     (is (str/includes? body "bookmark-of: https://example.com"))))
 
+(deftest note-with-bookmark-name-contains-name
+  (let [{:keys [body]} (build-note "Great read" nil "https://example.com" "Example Article")]
+    (is (str/includes? body "name: Example Article"))))
+
+(deftest note-without-bookmark-name-has-no-name
+  (let [{:keys [body]} (build-note "Hello world" nil "https://example.com")]
+    (is (not (str/includes? body "name:")))))
+
 (deftest note-with-photo-includes-photo-frontmatter
   (let [{:keys [body]} (build-note "Hello world" ["https://chndr.cc/img/uploads/123-photo.jpg"])]
     (is (str/includes? body "photo:"))

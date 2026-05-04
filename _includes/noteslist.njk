@@ -3,7 +3,7 @@
   <section class="h-entry noteslist-item{% if note.url == url %} noteslist-item-active{% endif %}">
    <div>
     {%- if note.data["bookmark-of"] -%}
-      <div><a href="{{ note.data['bookmark-of'] }}" class="u-bookmark-of">→ {{ note.data["bookmark-of"] }}</a></div>
+      <div><a href="{{ note.data['bookmark-of'] }}" class="u-bookmark-of">→ {{ note.data.name if note.data.name else note.data["bookmark-of"] }}</a></div>
     {%- endif -%}
     {{ note.templateContent | safe }}
     {%- if note.data.photo -%}
