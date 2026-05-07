@@ -3,5 +3,13 @@ layout: layouts/base.njk
 ---
 <section class="h-entry">
 	<time class="dt-published" datetime="{{ date | htmlDateString }}">{{ date | readableDate }}</time>
-		{{ content | safe }}
+	{%- if bookmarkOf -%}
+		<div><a href="{{ bookmarkOf }}" class="u-bookmark-of">→ {{ title if title else bookmarkOf }}</a></div>
+	{%- endif -%}
+	{{ content | safe }}
+	{%- if photo -%}
+		{% for p in photo %}
+			<img src="{{ p.url | url }}" {% if p.alt %}alt="{{ p.alt }}"{% endif %}>
+		{% endfor %}
+	{%- endif -%}
 </section>
