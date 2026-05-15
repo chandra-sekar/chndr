@@ -93,3 +93,14 @@
     (if (= 201 status)
       {:status :created :url url}
       {:status :error :http-status status})))
+
+(defn syndicate-to-mastodon! [{:keys [content name]}]
+  (when-let [token (System/getenv "BRIDGY_MASTODON_TOKEN")]
+    (let [props   (cond-> {:content [content]}
+                    (not (str/blank? name)) (assoc :name [name]))
+          payload (json/write-str {:type ["h-entry"] :properties props})]
+      @(http/post "https://brid.gy/micropub"
+                  {:headers {"Authorization" (str "Bearer " token)
+                             "Content-Type"  "application/json"}
+                   :body    payload
+                   :timeout 15000}))))

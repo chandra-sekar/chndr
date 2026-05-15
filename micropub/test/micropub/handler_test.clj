@@ -270,3 +270,32 @@
           response (app request)]
       (is (str/starts-with? (get-in response [:headers "Location"])
                             "https://chndr.cc/notes/")))))
+
+;; ---------------------------------------------------------------------------
+;; Mastodon syndication
+;; ---------------------------------------------------------------------------
+
+(deftest syndication-called-on-successful-post
+  (let [syndicate-args (promise)]
+    (with-redefs [auth/validate-token           valid-token-stub
+                  posts/create-post             success-note-stub
+                  posts/syndicate-to-mastodon!  (fn [args] (deliver syndicate-args args))]
+      (app (-> (mock/request :post "/micropub")
+               (mock/content-type "application/x-www-form-urlencoded")
+               (mock/body "h=entry&content=Hello+world")
+               (mock/header "Authorization" "Bearer valid-token")))
+      (let [args (deref syndicate-args 500 :timeout)]
+        (is (not= :timeout args))
+        (is (= "Hello world" (:content args)))))))
+
+(deftest syndication-not-called-on-github-failure
+  (let [called (atom false)]
+    (with-redefs [auth/validate-token           valid-token-stub
+                  posts/create-post             github-error-stub
+                  posts/syndicate-to-mastodon!  (fn [_] (reset! called true))]
+      (app (-> (mock/request :post "/micropub")
+               (mock/content-type "application/x-www-form-urlencoded")
+               (mock/body "h=entry&content=Hello")
+               (mock/header "Authorization" "Bearer valid-token")))
+      (Thread/sleep 100)
+      (is (false? @called)))))

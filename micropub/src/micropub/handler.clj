@@ -54,9 +54,11 @@
             {:status 400 :body "Bad Request: missing content"}
             (let [result (posts/create-post {:name name :content content :photo photo :bookmark-of bookmark-of})]
               (if (= :created (:status result))
-                {:status 201
-                 :headers {"Location" (:url result)}
-                 :body ""}
+                (do
+                  (future (posts/syndicate-to-mastodon! {:content content :name name}))
+                  {:status 201
+                   :headers {"Location" (:url result)}
+                   :body ""})
                 {:status 500 :body "Internal Server Error"}))))))))
 
 (defn- handle-media-post [request]
