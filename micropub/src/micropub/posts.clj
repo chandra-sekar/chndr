@@ -99,9 +99,10 @@
     (let [props   (cond-> {:content [content]}
                     (not (str/blank? name)) (assoc :name [name])
                     (seq photo)             (assoc :photo (vec photo)))
-          payload (json/write-str {:type ["h-entry"] :properties props})]
-      @(http/post "https://brid.gy/micropub"
-                  {:headers {"Authorization" (str "Bearer " token)
-                             "Content-Type"  "application/json"}
-                   :body    payload
-                   :timeout 15000}))))
+          payload (json/write-str {:type ["h-entry"] :properties props})
+          {:keys [status body]} @(http/post "https://brid.gy/micropub"
+                                            {:headers {"Authorization" (str "Bearer " token)
+                                                       "Content-Type"  "application/json"}
+                                             :body    payload
+                                             :timeout 15000})]
+      (println (str "Bridgy micropub response: HTTP " status " — " body)))))

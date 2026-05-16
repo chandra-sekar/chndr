@@ -1,11 +1,16 @@
 (ns micropub.handler-test
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [clojure.test :refer [deftest is testing use-fixtures]]
             [clojure.string :as str]
             [micropub.auth :as auth]
             [micropub.handler :refer [app]]
             [micropub.posts :as posts]
             [ring.mock.request :as mock]
             [clojure.data.json :as json]))
+
+(use-fixtures :each
+  (fn [f]
+    (with-redefs [posts/syndicate-to-mastodon! (fn [_] nil)]
+      (f))))
 
 (defn- valid-token-stub [_token] {:me "https://chndr.cc"})
 (defn- invalid-token-stub [_token] nil)
