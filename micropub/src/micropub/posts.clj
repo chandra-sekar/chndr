@@ -94,10 +94,11 @@
       {:status :created :url url}
       {:status :error :http-status status})))
 
-(defn syndicate-to-mastodon! [{:keys [content name]}]
+(defn syndicate-to-mastodon! [{:keys [content name photo]}]
   (when-let [token (System/getenv "BRIDGY_MASTODON_TOKEN")]
     (let [props   (cond-> {:content [content]}
-                    (not (str/blank? name)) (assoc :name [name]))
+                    (not (str/blank? name)) (assoc :name [name])
+                    (seq photo)             (assoc :photo (vec photo)))
           payload (json/write-str {:type ["h-entry"] :properties props})]
       @(http/post "https://brid.gy/micropub"
                   {:headers {"Authorization" (str "Bearer " token)

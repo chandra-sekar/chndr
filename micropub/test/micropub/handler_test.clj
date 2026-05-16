@@ -288,6 +288,21 @@
         (is (not= :timeout args))
         (is (= "Hello world" (:content args)))))))
 
+(deftest syndication-passes-photos
+  (let [syndicate-args (promise)]
+    (with-redefs [auth/validate-token          valid-token-stub
+                  posts/create-post            success-note-stub
+                  posts/syndicate-to-mastodon! (fn [args] (deliver syndicate-args args))]
+      (let [body (json/write-str {:type ["h-entry"]
+                                  :properties {:content ["Hello with photo"]
+                                               :photo ["https://chndr.cc/img/uploads/123-photo.jpg"]}})]
+        (app (-> (mock/request :post "/micropub")
+                 (mock/content-type "application/json")
+                 (mock/body body)
+                 (mock/header "Authorization" "Bearer valid-token"))))
+      (let [args (deref syndicate-args 500 :timeout)]
+        (is (= ["https://chndr.cc/img/uploads/123-photo.jpg"] (:photo args)))))))
+
 (deftest syndication-not-called-on-github-failure
   (let [called (atom false)]
     (with-redefs [auth/validate-token           valid-token-stub

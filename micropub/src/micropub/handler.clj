@@ -55,7 +55,7 @@
             (let [result (posts/create-post {:name name :content content :photo photo :bookmark-of bookmark-of})]
               (if (= :created (:status result))
                 (do
-                  (future (posts/syndicate-to-mastodon! {:content content :name name}))
+                  (future (posts/syndicate-to-mastodon! {:content content :name name :photo photo}))
                   {:status 201
                    :headers {"Location" (:url result)}
                    :body ""})
