@@ -1,4 +1,4 @@
-<div class="noteslist">
+<div class="noteslist h-feed">
 {% for note in noteslist %}
   <section class="h-entry noteslist-item{% if note.url == url %} noteslist-item-active{% endif %}">
    <div>
@@ -10,9 +10,12 @@
       {% for photo in note.data.photo %}
         <img src="{{ photo.url | url }}">
       {% endfor %}
-    {%- endif -%} 
-   </div> 
-    <a href="{{ note.url | url }}" class="noteslist-date">
+    {%- endif -%}
+    {%- if note.data.syndication -%}
+      <a href="{{ note.data.syndication }}" class="u-syndication" rel="syndication">Mastodon</a>
+    {%- endif -%}
+   </div>
+    <a href="{{ note.url | url }}" class="u-url noteslist-date">
       <time class="dt-published" datetime="{{ note.date | htmlDateString }}">{{ note.date | readableDate }}</time>
     </a>
 
