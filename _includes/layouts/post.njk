@@ -8,7 +8,7 @@ layout: layouts/base.njk
 	{%- if syndication -%}
 		<a href="{{ syndication }}" class="u-syndication" rel="syndication">Mastodon</a>
 	{%- endif -%}
-	{%- set pageUrl = metadata.url.rstrip('/') + page.url -%}
+	{%- set pageUrl = metadata.url.slice(0, -1) + page.url -%}
 	{%- set mentions = webmentions[pageUrl] -%}
 	{%- if mentions -%}
 		{%- if mentions.likes.length or mentions.reposts.length -%}
