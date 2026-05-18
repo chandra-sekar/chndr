@@ -12,4 +12,17 @@ layout: layouts/base.njk
 			<img src="{{ p.url | url }}" {% if p.alt %}alt="{{ p.alt }}"{% endif %}>
 		{% endfor %}
 	{%- endif -%}
+	{%- if syndication -%}
+		<a href="{{ syndication }}" class="u-syndication" rel="syndication">Mastodon</a>
+	{%- endif -%}
+	{%- set pageUrl = metadata.url.rstrip('/') + page.url -%}
+	{%- set mentions = webmentions[pageUrl] -%}
+	{%- if mentions -%}
+		{%- if mentions.likes.length or mentions.reposts.length -%}
+			<p class="webmentions-counts">{{ mentions.likes.length }} like{{ 's' if mentions.likes.length != 1 }} · {{ mentions.reposts.length }} boost{{ 's' if mentions.reposts.length != 1 }}</p>
+		{%- endif -%}
+		{%- for reply in mentions.replies -%}
+			<p class="webmention-reply"><a href="{{ reply.url }}">{{ reply.author.name if reply.author else reply.url }}</a>: {{ reply.content.text if reply.content else '' }}</p>
+		{%- endfor -%}
+	{%- endif -%}
 </section>

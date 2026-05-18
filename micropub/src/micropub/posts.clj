@@ -91,8 +91,34 @@
                                      :body payload
                                      :timeout 10000})]
     (if (= 201 status)
-      {:status :created :url url}
+      {:status :created :url url :path path}
       {:status :error :http-status status})))
+
+(defn- add-syndication [file-content mastodon-url]
+  (let [[_ frontmatter body] (str/split file-content #"---\n" 3)]
+    (str "---\n" frontmatter "syndication: " mastodon-url "\n---\n" body)))
+
+(defn update-syndication! [path mastodon-url]
+  (let [github-token (System/getenv "GITHUB_TOKEN")
+        {:keys [body]} @(http/get (str github-api "/repos/" repo "/contents/" path)
+                                  {:headers {"Authorization" (str "Bearer " github-token)
+                                             "Accept" "application/vnd.github+json"
+                                             "X-GitHub-Api-Version" "2022-11-28"}
+                                   :timeout 10000})
+        {:keys [sha content]} (json/read-str body :key-fn keyword)
+        decoded  (String. (.decode (Base64/getMimeDecoder) content) "UTF-8")
+        updated  (add-syndication decoded mastodon-url)
+        payload  (json/write-str {:message "Add syndication link"
+                                  :content (base64 updated)
+                                  :sha     sha
+                                  :branch  "master"})]
+    @(http/put (str github-api "/repos/" repo "/contents/" path)
+               {:headers {"Authorization" (str "Bearer " github-token)
+                          "Content-Type" "application/json"
+                          "Accept" "application/vnd.github+json"
+                          "X-GitHub-Api-Version" "2022-11-28"}
+                :body    payload
+                :timeout 10000})))
 
 (defn syndicate-to-mastodon! [{:keys [content name photo]}]
   (when-let [token (System/getenv "BRIDGY_MASTODON_TOKEN")]
@@ -105,4 +131,6 @@
                                                        "Content-Type"  "application/json"}
                                              :body    payload
                                              :timeout 15000})]
-      (println (str "Bridgy micropub response: HTTP " status " — " body)))))
+      (println (str "Bridgy micropub response: HTTP " status " — " body))
+      (when (= 201 status)
+        (:url (json/read-str body :key-fn keyword))))))

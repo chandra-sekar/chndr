@@ -9,13 +9,14 @@
 
 (use-fixtures :each
   (fn [f]
-    (with-redefs [posts/syndicate-to-mastodon! (fn [_] nil)]
+    (with-redefs [posts/syndicate-to-mastodon! (fn [_] nil)
+                  posts/update-syndication!    (fn [_ _] nil)]
       (f))))
 
 (defn- valid-token-stub [_token] {:me "https://chndr.cc"})
 (defn- invalid-token-stub [_token] nil)
-(defn- success-note-stub [_] {:status :created :url "https://chndr.cc/notes/1234567890/"})
-(defn- success-article-stub [_] {:status :created :url "https://chndr.cc/posts/my-title/"})
+(defn- success-note-stub [_] {:status :created :url "https://chndr.cc/notes/1234567890/" :path "notes/1234567890.md"})
+(defn- success-article-stub [_] {:status :created :url "https://chndr.cc/posts/my-title/" :path "posts/my-title.md"})
 (defn- github-error-stub [_] {:status :error :http-status 422})
 (defn- success-media-stub [_] {:status :created :url "https://chndr.cc/img/uploads/123-photo.jpg"})
 (defn- media-error-stub [_] {:status :error :http-status 422})
@@ -284,7 +285,7 @@
   (let [syndicate-args (promise)]
     (with-redefs [auth/validate-token           valid-token-stub
                   posts/create-post             success-note-stub
-                  posts/syndicate-to-mastodon!  (fn [args] (deliver syndicate-args args))]
+                  posts/syndicate-to-mastodon!  (fn [args] (deliver syndicate-args args) nil)]
       (app (-> (mock/request :post "/micropub")
                (mock/content-type "application/x-www-form-urlencoded")
                (mock/body "h=entry&content=Hello+world")
@@ -297,7 +298,7 @@
   (let [syndicate-args (promise)]
     (with-redefs [auth/validate-token          valid-token-stub
                   posts/create-post            success-note-stub
-                  posts/syndicate-to-mastodon! (fn [args] (deliver syndicate-args args))]
+                  posts/syndicate-to-mastodon! (fn [args] (deliver syndicate-args args) nil)]
       (let [body (json/write-str {:type ["h-entry"]
                                   :properties {:content ["Hello with photo"]
                                                :photo ["https://chndr.cc/img/uploads/123-photo.jpg"]}})]
@@ -316,6 +317,34 @@
       (app (-> (mock/request :post "/micropub")
                (mock/content-type "application/x-www-form-urlencoded")
                (mock/body "h=entry&content=Hello")
+               (mock/header "Authorization" "Bearer valid-token")))
+      (Thread/sleep 100)
+      (is (false? @called)))))
+
+(deftest update-syndication-called-with-path-and-mastodon-url
+  (let [update-args (promise)]
+    (with-redefs [auth/validate-token           valid-token-stub
+                  posts/create-post             success-note-stub
+                  posts/syndicate-to-mastodon!  (fn [_] "https://mastodon.social/@chander/999")
+                  posts/update-syndication!     (fn [path url] (deliver update-args {:path path :url url}))]
+      (app (-> (mock/request :post "/micropub")
+               (mock/content-type "application/x-www-form-urlencoded")
+               (mock/body "h=entry&content=Hello+world")
+               (mock/header "Authorization" "Bearer valid-token")))
+      (let [args (deref update-args 500 :timeout)]
+        (is (not= :timeout args))
+        (is (= "notes/1234567890.md" (:path args)))
+        (is (= "https://mastodon.social/@chander/999" (:url args)))))))
+
+(deftest update-syndication-not-called-when-bridgy-returns-nil
+  (let [called (atom false)]
+    (with-redefs [auth/validate-token           valid-token-stub
+                  posts/create-post             success-note-stub
+                  posts/syndicate-to-mastodon!  (fn [_] nil)
+                  posts/update-syndication!     (fn [_ _] (reset! called true))]
+      (app (-> (mock/request :post "/micropub")
+               (mock/content-type "application/x-www-form-urlencoded")
+               (mock/body "h=entry&content=Hello+world")
                (mock/header "Authorization" "Bearer valid-token")))
       (Thread/sleep 100)
       (is (false? @called)))))

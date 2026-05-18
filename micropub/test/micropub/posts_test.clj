@@ -1,7 +1,8 @@
 (ns micropub.posts-test
   (:require [clojure.test :refer [deftest is testing]]
             [clojure.string :as str]
-            [micropub.posts :refer [build-note build-article build-media]]))
+            [micropub.posts :refer [build-note build-article build-media]]
+            [micropub.posts]))
 
 ;; ---------------------------------------------------------------------------
 ;; Note structure
@@ -163,3 +164,27 @@
 (deftest media-url-does-not-end-with-slash
   (let [{:keys [url]} (build-media "photo.jpg")]
     (is (not (str/ends-with? url "/")))))
+
+;; ---------------------------------------------------------------------------
+;; add-syndication
+;; ---------------------------------------------------------------------------
+
+(deftest add-syndication-inserts-field-in-frontmatter
+  (let [content "---\ndate: 2026-01-01\n---\nHello world\n"
+        result  (#'micropub.posts/add-syndication content "https://mastodon.social/@chander/123")]
+    (is (str/includes? result "syndication: https://mastodon.social/@chander/123"))))
+
+(deftest add-syndication-preserves-existing-frontmatter
+  (let [content "---\ndate: 2026-01-01\n---\nHello world\n"
+        result  (#'micropub.posts/add-syndication content "https://mastodon.social/@chander/123")]
+    (is (str/includes? result "date: 2026-01-01"))))
+
+(deftest add-syndication-preserves-body
+  (let [content "---\ndate: 2026-01-01\n---\nHello world\n"
+        result  (#'micropub.posts/add-syndication content "https://mastodon.social/@chander/123")]
+    (is (str/includes? result "Hello world"))))
+
+(deftest add-syndication-starts-with-frontmatter-delimiter
+  (let [content "---\ndate: 2026-01-01\n---\nHello world\n"
+        result  (#'micropub.posts/add-syndication content "https://mastodon.social/@chander/123")]
+    (is (str/starts-with? result "---\n"))))
