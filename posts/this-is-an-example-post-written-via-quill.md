@@ -2,6 +2,7 @@
 title: This is an example post written via quill
 date: 2026-05-20T17:57:34.617459310Z
 layout: layouts/post.njk
+syndication: https://social.lol/@chandra/116608195789178882
 ---
 <p>Let me see if this is actually a nice interface for writing a post</p>
 <figure>
