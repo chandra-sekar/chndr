@@ -7,7 +7,7 @@ Chandrasekar's personal website built with [Eleventy](https://www.11ty.dev/).
 - **Journal**: Long-form blog posts with titles
 - **Notes**: Short-form content (tweet-like) with timestamps, image support, and links
 - **Bookshelf**: Curated collection of favorite content
-- **IndieWeb**: Microformats support (h-entry, h-card)
+- **IndieWeb**: Microformats, Micropub, Webmention, POSSE to Mastodon via Bridgy
 - **RSS/JSON Feeds**: Available for both posts and notes
 - **Sass**: Compiled SCSS stylesheets
 - **Netlify CMS**: Admin interface for content management
@@ -64,7 +64,8 @@ The output will be in the `_site` directory.
 ├── _11ty/              # Eleventy utilities
 │   └── getTagList.js   # Tag collection helper
 ├── _data/              # Global data files
-│   └── metadata.json   # Site metadata
+│   ├── metadata.json   # Site metadata
+│   └── webmentions.js  # Fetches webmentions from webmention.io at build time
 ├── _includes/          # Templates and partials
 │   ├── layouts/        # Layout templates
 │   │   ├── base.njk    # Base HTML layout
@@ -183,9 +184,11 @@ The site is configured for deployment on Netlify:
 
 This site supports IndieWeb standards:
 
-- **Microformats**: h-entry, h-card, dt-published
+- **Microformats**: h-entry, h-card, h-feed, dt-published, u-syndication
 - **Micropub**: Endpoint at `https://chndr-micropub.apps.garden/micropub`
 - **IndieAuth**: Authorization via `https://indieauth.com/auth`, tokens via `https://tokens.indieauth.com/token`
+- **Webmention**: Endpoint at `https://webmention.io/chndr.cc/webmention`
+- **POSSE**: Notes are syndicated to Mastodon via Bridgy; backfeed (likes, replies, boosts) is displayed on each note
 - **rel=me**: Links for identity verification
 
 ## Micropub Server
@@ -199,13 +202,21 @@ Micropub client
     │ POST /micropub (Bearer token)
     ▼
 chndr-micropub.apps.garden   (Clojure/http-kit on Application Garden)
-    │ Validates token via GET https://tokens.indieauth.com/token
-    │ Creates file via PUT https://api.github.com/repos/chandra-sekar/chndr/contents/...
+    │ Validates token via IndieAuth
+    │ Commits file via GitHub Contents API
+    │ (async) POST https://brid.gy/micropub → Mastodon post created
+    │ (async) Writes syndication: <mastodon-url> back to note frontmatter
     ▼
 GitHub (master branch)
     │ push triggers Netlify build
     ▼
-chndr.cc
+chndr.cc  (note now has u-syndication link)
+    │
+    └── When someone interacts with the Mastodon post:
+        Bridgy finds u-syndication link via POSSE-post-discovery
+        → sends webmention to webmention.io
+        → webmention.io webhook triggers Netlify rebuild
+        → like/reply/boost appears on the note
 ```
 
 ### Post types
@@ -215,6 +226,7 @@ chndr.cc
 ```markdown
 ---
 date: 2026-05-03T10:30:00Z
+syndication: https://mastodon.social/@chander/123456  # added after Bridgy syndication
 ---
 Content here.
 ```
@@ -242,7 +254,7 @@ micropub/
     core.clj          # starts http-kit on port 7777
     handler.clj       # Ring routing, request parsing
     auth.clj          # IndieAuth token validation
-    posts.clj         # file building, GitHub Contents API
+    posts.clj         # file building, GitHub Contents API, Bridgy syndication
   test/micropub/
     handler_test.clj  # HTTP behavior tests
     posts_test.clj    # post content and slug tests
@@ -250,12 +262,17 @@ micropub/
 
 ### Deployment
 
-The server runs on [Application Garden](https://application.garden) as `chndr-micropub`. It requires a `GITHUB_TOKEN` secret (fine-grained PAT with Contents write access to this repo).
+The server runs on [Application Garden](https://application.garden) as `chndr-micropub`. Required secrets:
+
+| Secret | Description |
+|---|---|
+| `GITHUB_TOKEN` | Fine-grained PAT with Contents write access to this repo |
+| `BRIDGY_MASTODON_TOKEN` | Bearer token from brid.gy for Mastodon syndication |
 
 ```bash
 cd micropub
 garden deploy          # deploy latest commit on master
-garden secrets list    # verify GITHUB_TOKEN is set
+garden secrets list    # verify secrets are set
 ```
 
 ### Running tests
@@ -265,7 +282,27 @@ cd micropub
 clojure -X:test
 ```
 
-38 behavioral tests covering HTTP routing, authentication, form and JSON post creation, post content structure, and slug generation. External dependencies (IndieAuth, GitHub API) are stubbed.
+70 behavioral tests covering HTTP routing, authentication, form and JSON post creation, media uploads, bookmarks, Mastodon syndication, and syndication URL writeback. External dependencies (IndieAuth, GitHub API, Bridgy) are stubbed.
+
+## Webmention Setup
+
+Webmentions are received via [webmention.io](https://webmention.io) and fetched at build time from `_data/webmentions.js`. Likes, boosts, and replies from Mastodon appear on each note and post after a Netlify rebuild.
+
+### Required Netlify environment variable
+
+| Variable | Description |
+|---|---|
+| `WEBMENTION_IO_TOKEN` | API token from webmention.io (sign in with IndieAuth at chndr.cc) |
+
+### Auto-rebuild on new webmention
+
+In webmention.io settings, set the notification webhook to your Netlify build hook URL. This triggers a rebuild automatically whenever a new webmention arrives, so interactions appear within a few minutes.
+
+### Bridgy backfeed
+
+Bridgy discovers which blog posts correspond to which Mastodon posts via the `u-syndication` links on notes (added after syndication). The notes page (`/notes/`) exposes an `h-feed` with these links; the homepage has `<link rel="feed" href="/notes/">` so Bridgy can be pointed at `https://chndr.cc/` directly.
+
+A dedicated machine-readable h-feed at `/notes/feed/` lists all notes with their syndication URLs, so Bridgy can match interactions on older posts that have scrolled off the paginated notes page.
 
 ## Dependencies
 
