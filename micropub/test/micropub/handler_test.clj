@@ -329,6 +329,19 @@
         (is (not= :timeout args))
         (is (= "Great read\n\nhttps://example.com" (:content args)))))))
 
+(deftest bookmark-with-name-syndication-uses-content-and-bookmark-url
+  (let [syndicate-args (promise)]
+    (with-redefs [auth/validate-token           valid-token-stub
+                  posts/create-post             success-bookmark-stub
+                  posts/syndicate-to-mastodon!  (fn [args] (deliver syndicate-args args) nil)]
+      (app (-> (mock/request :post "/micropub")
+               (mock/content-type "application/x-www-form-urlencoded")
+               (mock/body "h=entry&name=Article+Title&bookmark-of=https%3A%2F%2Fexample.com&content=Great+read")
+               (mock/header "Authorization" "Bearer valid-token")))
+      (let [args (deref syndicate-args 500 :timeout)]
+        (is (not= :timeout args))
+        (is (= "Great read\n\nhttps://example.com" (:content args)))))))
+
 (deftest bookmark-without-content-does-not-syndicate
   (let [called (atom false)]
     (with-redefs [auth/validate-token           valid-token-stub

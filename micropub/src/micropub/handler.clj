@@ -45,9 +45,9 @@
 
 (defn- syndication-content [name content bookmark-of post-url]
   (cond
-    (not (str/blank? name)) (str "New post: " name "\n\n" post-url)
     bookmark-of             (when-not (str/blank? content)
                               (str content "\n\n" bookmark-of))
+    (not (str/blank? name)) (str "New post: " name "\n\n" post-url)
     :else                   content))
 
 (defn- handle-micropub-post [request]
