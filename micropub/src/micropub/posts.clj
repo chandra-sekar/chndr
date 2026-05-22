@@ -36,7 +36,14 @@
    (let [ts   (quot (System/currentTimeMillis) 1000)
          date (iso-now)
          photo-yaml    (when (seq photos)
-                         (str "photo:\n" (str/join "\n" (map #(str "  - url: " % "\n    alt: \"\"") photos)) "\n"))
+                         (str "photo:\n"
+                              (str/join "\n"
+                                (map (fn [p]
+                                       (let [url (if (string? p) p (:value p))
+                                             alt (if (string? p) "" (or (:alt p) ""))]
+                                         (str "  - url: " url "\n    alt: \"" alt "\"")))
+                                     photos))
+                              "\n"))
          bookmark-yaml (when bookmark-of (str "bookmark-of: " bookmark-of "\n"))
          name-yaml     (when bookmark-name (str "name: " bookmark-name "\n"))
          body (str "---\ndate: " date "\n" (or photo-yaml "") (or bookmark-yaml "") (or name-yaml "") "---\n" content "\n")

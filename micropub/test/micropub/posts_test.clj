@@ -82,6 +82,17 @@
     (is (str/includes? body "  - url: https://chndr.cc/img/uploads/1-a.jpg"))
     (is (str/includes? body "  - url: https://chndr.cc/img/uploads/2-b.jpg"))))
 
+(deftest note-with-photo-map-uses-value-as-url
+  (let [{:keys [body]} (build-note "Hello world" [{:value "https://chndr.cc/img/uploads/123-photo.jpg"
+                                                    :alt "A description"}])]
+    (is (str/includes? body "  - url: https://chndr.cc/img/uploads/123-photo.jpg"))
+    (is (str/includes? body "    alt: \"A description\""))))
+
+(deftest note-with-photo-map-missing-alt-defaults-to-empty
+  (let [{:keys [body]} (build-note "Hello world" [{:value "https://chndr.cc/img/uploads/123-photo.jpg"}])]
+    (is (str/includes? body "  - url: https://chndr.cc/img/uploads/123-photo.jpg"))
+    (is (str/includes? body "    alt: \"\""))))
+
 ;; ---------------------------------------------------------------------------
 ;; Article structure
 ;; ---------------------------------------------------------------------------
