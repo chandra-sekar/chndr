@@ -330,15 +330,15 @@
         (is (= "Great read\n\nhttps://example.com" (:content args)))))))
 
 (deftest bookmark-without-content-does-not-syndicate
-  (let [called (promise)]
+  (let [called (atom false)]
     (with-redefs [auth/validate-token           valid-token-stub
                   posts/create-post             success-bookmark-stub
-                  posts/syndicate-to-mastodon!  (fn [_] (deliver called true))]
+                  posts/syndicate-to-mastodon!  (fn [_] (reset! called true))]
       (app (-> (mock/request :post "/micropub")
                (mock/content-type "application/x-www-form-urlencoded")
                (mock/body "h=entry&bookmark-of=https%3A%2F%2Fexample.com")
                (mock/header "Authorization" "Bearer valid-token")))
-      (is (= :not-called (deref called 200 :not-called))))))
+      (is (false? @called)))))
 
 (deftest syndication-passes-photos
   (let [syndicate-args (promise)]
@@ -356,15 +356,15 @@
         (is (= ["https://chndr.cc/img/uploads/123-photo.jpg"] (:photo args)))))))
 
 (deftest syndication-not-called-on-github-failure
-  (let [called (promise)]
+  (let [called (atom false)]
     (with-redefs [auth/validate-token           valid-token-stub
                   posts/create-post             github-error-stub
-                  posts/syndicate-to-mastodon!  (fn [_] (deliver called true))]
+                  posts/syndicate-to-mastodon!  (fn [_] (reset! called true))]
       (app (-> (mock/request :post "/micropub")
                (mock/content-type "application/x-www-form-urlencoded")
                (mock/body "h=entry&content=Hello")
                (mock/header "Authorization" "Bearer valid-token")))
-      (is (= :not-called (deref called 200 :not-called))))))
+      (is (false? @called)))))
 
 (deftest update-syndication-called-with-path-and-mastodon-url
   (let [update-args (promise)]

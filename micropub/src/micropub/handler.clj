@@ -62,10 +62,12 @@
             (let [result (posts/create-post {:name name :content content :photo photo :bookmark-of bookmark-of})]
               (if (= :created (:status result))
                 (let [syn-content (syndication-content name content bookmark-of (:url result))]
-                  (future
-                    (when syn-content
-                      (when-let [mastodon-url (posts/syndicate-to-mastodon! {:content syn-content :photo photo})]
-                        (posts/update-syndication! (:path result) mastodon-url))))
+                  (when syn-content
+                    (let [syndicate! posts/syndicate-to-mastodon!
+                          update!    posts/update-syndication!]
+                      (future
+                        (when-let [mastodon-url (syndicate! {:content syn-content :photo photo})]
+                          (update! (:path result) mastodon-url)))))
                   {:status 201
                    :headers {"Location" (:url result)}
                    :body ""})
