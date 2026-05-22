@@ -43,12 +43,18 @@
          :photo       (normalize-vec raw)
          :bookmark-of (get params "bookmark-of")}))))
 
-(defn- syndication-content [name content bookmark-of post-url]
+(defn- post-type [{:keys [name bookmark-of]}]
   (cond
-    bookmark-of             (when-not (str/blank? content)
-                              (str content "\n\n" bookmark-of))
-    (not (str/blank? name)) (str "New post: " name "\n\n" post-url)
-    :else                   content))
+    bookmark-of       :bookmark
+    (str/blank? name) :note
+    :else             :article))
+
+(defn- syndication-content [type {:keys [name content bookmark-of]} post-url]
+  (case type
+    :article  (str "New post: " name "\n\n" post-url)
+    :bookmark (when-not (str/blank? content)
+                (str content "\n\n" bookmark-of))
+    :note     content))
 
 (defn- handle-micropub-post [request]
   (let [token (bearer-token request)]
@@ -56,12 +62,13 @@
       {:status 401 :body "Unauthorized"}
       (if-not (auth/validate-token token)
         {:status 403 :body "Forbidden"}
-        (let [{:keys [h name content photo bookmark-of]} (extract-params request)]
+        (let [{:keys [h name content photo bookmark-of] :as params} (extract-params request)]
           (if (and (str/blank? content) (not bookmark-of))
             {:status 400 :body "Bad Request: missing content"}
             (let [result (posts/create-post {:name name :content content :photo photo :bookmark-of bookmark-of})]
               (if (= :created (:status result))
-                (let [syn-content (syndication-content name content bookmark-of (:url result))]
+                (let [type        (post-type params)
+                      syn-content (syndication-content type params (:url result))]
                   (when syn-content
                     (let [syndicate! posts/syndicate-to-mastodon!
                           update!    posts/update-syndication!]
