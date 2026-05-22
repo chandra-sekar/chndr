@@ -355,6 +355,25 @@
       (let [args (deref syndicate-args 500 :timeout)]
         (is (= ["https://chndr.cc/img/uploads/123-photo.jpg"] (:photo args)))))))
 
+(deftest syndication-passes-photo-alt-text
+  (let [syndicate-args (promise)]
+    (with-redefs [auth/validate-token          valid-token-stub
+                  posts/create-post            success-note-stub
+                  posts/syndicate-to-mastodon! (fn [args] (deliver syndicate-args args) nil)]
+      (let [body (json/write-str {:type ["h-entry"]
+                                  :properties {:content ["A photo with alt text"]
+                                               :photo [{:value "https://chndr.cc/img/uploads/123-photo.jpg"
+                                                        :alt   "A sunset over the sea"}]}})]
+        (app (-> (mock/request :post "/micropub")
+                 (mock/content-type "application/json")
+                 (mock/body body)
+                 (mock/header "Authorization" "Bearer valid-token"))))
+      (let [args  (deref syndicate-args 500 :timeout)
+            photo (first (:photo args))]
+        (is (not= :timeout args))
+        (is (= "https://chndr.cc/img/uploads/123-photo.jpg" (:value photo)))
+        (is (= "A sunset over the sea" (:alt photo)))))))
+
 (deftest syndication-not-called-on-github-failure
   (let [called (atom false)]
     (with-redefs [auth/validate-token           valid-token-stub
