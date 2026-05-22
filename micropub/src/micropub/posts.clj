@@ -128,11 +128,10 @@
     (when-not (#{200 201} status)
       (println (str "update-syndication! failed: HTTP " status)))))
 
-(defn syndicate-to-mastodon! [{:keys [content name photo]}]
+(defn syndicate-to-mastodon! [{:keys [content photo]}]
   (when-let [token (System/getenv "BRIDGY_MASTODON_TOKEN")]
     (let [props   (cond-> {:content [content]}
-                    (not (str/blank? name)) (assoc :name [name])
-                    (seq photo)             (assoc :photo (vec photo)))
+                    (seq photo) (assoc :photo (vec photo)))
           payload (json/write-str {:type ["h-entry"] :properties props})
           {:keys [status body]} @(http/post "https://brid.gy/micropub"
                                             {:headers {"Authorization" (str "Bearer " token)

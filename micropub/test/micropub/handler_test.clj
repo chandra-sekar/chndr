@@ -17,6 +17,7 @@
 (defn- invalid-token-stub [_token] nil)
 (defn- success-note-stub [_] {:status :created :url "https://chndr.cc/notes/1234567890/" :path "notes/1234567890.md"})
 (defn- success-article-stub [_] {:status :created :url "https://chndr.cc/posts/my-title/" :path "posts/my-title.md"})
+(defn- success-bookmark-stub [_] {:status :created :url "https://chndr.cc/notes/1234567890/" :path "notes/1234567890.md"})
 (defn- github-error-stub [_] {:status :error :http-status 422})
 (defn- success-media-stub [_] {:status :created :url "https://chndr.cc/img/uploads/123-photo.jpg"})
 (defn- media-error-stub [_] {:status :error :http-status 422})
@@ -129,6 +130,16 @@
           response (app request)]
       (is (= 400 (:status response))))))
 
+(deftest bookmark-without-content-returns-201
+  (with-redefs [auth/validate-token valid-token-stub
+                posts/create-post   success-bookmark-stub]
+    (let [request (-> (mock/request :post "/micropub")
+                      (mock/content-type "application/x-www-form-urlencoded")
+                      (mock/body "h=entry&bookmark-of=https%3A%2F%2Fexample.com")
+                      (mock/header "Authorization" "Bearer valid-token"))
+          response (app request)]
+      (is (= 201 (:status response))))))
+
 ;; ---------------------------------------------------------------------------
 ;; JSON post creation
 ;; ---------------------------------------------------------------------------
@@ -230,8 +241,6 @@
 ;; Bookmark / link posts
 ;; ---------------------------------------------------------------------------
 
-(defn- success-bookmark-stub [_] {:status :created :url "https://chndr.cc/notes/1234567890/"})
-
 (deftest form-bookmark-returns-201
   (with-redefs [auth/validate-token valid-token-stub
                 posts/create-post   success-bookmark-stub]
@@ -281,7 +290,7 @@
 ;; Mastodon syndication
 ;; ---------------------------------------------------------------------------
 
-(deftest syndication-called-on-successful-post
+(deftest note-syndication-uses-content-as-is
   (let [syndicate-args (promise)]
     (with-redefs [auth/validate-token           valid-token-stub
                   posts/create-post             success-note-stub
@@ -293,6 +302,43 @@
       (let [args (deref syndicate-args 500 :timeout)]
         (is (not= :timeout args))
         (is (= "Hello world" (:content args)))))))
+
+(deftest article-syndication-uses-title-and-post-url
+  (let [syndicate-args (promise)]
+    (with-redefs [auth/validate-token           valid-token-stub
+                  posts/create-post             success-article-stub
+                  posts/syndicate-to-mastodon!  (fn [args] (deliver syndicate-args args) nil)]
+      (app (-> (mock/request :post "/micropub")
+               (mock/content-type "application/x-www-form-urlencoded")
+               (mock/body "h=entry&name=My+Title&content=Body+text")
+               (mock/header "Authorization" "Bearer valid-token")))
+      (let [args (deref syndicate-args 500 :timeout)]
+        (is (not= :timeout args))
+        (is (= "New post: My Title\n\nhttps://chndr.cc/posts/my-title/" (:content args)))))))
+
+(deftest bookmark-syndication-uses-content-and-bookmark-url
+  (let [syndicate-args (promise)]
+    (with-redefs [auth/validate-token           valid-token-stub
+                  posts/create-post             success-bookmark-stub
+                  posts/syndicate-to-mastodon!  (fn [args] (deliver syndicate-args args) nil)]
+      (app (-> (mock/request :post "/micropub")
+               (mock/content-type "application/x-www-form-urlencoded")
+               (mock/body "h=entry&bookmark-of=https%3A%2F%2Fexample.com&content=Great+read")
+               (mock/header "Authorization" "Bearer valid-token")))
+      (let [args (deref syndicate-args 500 :timeout)]
+        (is (not= :timeout args))
+        (is (= "Great read\n\nhttps://example.com" (:content args)))))))
+
+(deftest bookmark-without-content-does-not-syndicate
+  (let [called (promise)]
+    (with-redefs [auth/validate-token           valid-token-stub
+                  posts/create-post             success-bookmark-stub
+                  posts/syndicate-to-mastodon!  (fn [_] (deliver called true))]
+      (app (-> (mock/request :post "/micropub")
+               (mock/content-type "application/x-www-form-urlencoded")
+               (mock/body "h=entry&bookmark-of=https%3A%2F%2Fexample.com")
+               (mock/header "Authorization" "Bearer valid-token")))
+      (is (= :not-called (deref called 200 :not-called))))))
 
 (deftest syndication-passes-photos
   (let [syndicate-args (promise)]

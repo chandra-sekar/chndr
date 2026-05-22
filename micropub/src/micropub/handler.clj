@@ -43,6 +43,13 @@
          :photo       (normalize-vec raw)
          :bookmark-of (get params "bookmark-of")}))))
 
+(defn- syndication-content [name content bookmark-of post-url]
+  (cond
+    (not (str/blank? name)) (str "New post: " name "\n\n" post-url)
+    bookmark-of             (when-not (str/blank? content)
+                              (str content "\n\n" bookmark-of))
+    :else                   content))
+
 (defn- handle-micropub-post [request]
   (let [token (bearer-token request)]
     (if-not token
@@ -50,14 +57,15 @@
       (if-not (auth/validate-token token)
         {:status 403 :body "Forbidden"}
         (let [{:keys [h name content photo bookmark-of]} (extract-params request)]
-          (if-not content
+          (if (and (str/blank? content) (not bookmark-of))
             {:status 400 :body "Bad Request: missing content"}
             (let [result (posts/create-post {:name name :content content :photo photo :bookmark-of bookmark-of})]
               (if (= :created (:status result))
-                (do
+                (let [syn-content (syndication-content name content bookmark-of (:url result))]
                   (future
-                    (when-let [mastodon-url (posts/syndicate-to-mastodon! {:content content :name name :photo photo})]
-                      (posts/update-syndication! (:path result) mastodon-url)))
+                    (when syn-content
+                      (when-let [mastodon-url (posts/syndicate-to-mastodon! {:content syn-content :photo photo})]
+                        (posts/update-syndication! (:path result) mastodon-url))))
                   {:status 201
                    :headers {"Location" (:url result)}
                    :body ""})
@@ -79,8 +87,7 @@
 
 (defn handler [request]
   (let [method (:request-method request)
-        path (:uri request)
-        query (:query-string request)]
+        path (:uri request)]
     (cond
       (and (#{:head :get} method) (= "/" path))
       {:status 200 :body ""}
