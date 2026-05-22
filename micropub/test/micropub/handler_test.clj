@@ -387,6 +387,33 @@
         (is (= "https://chndr.cc/img/uploads/123-photo.jpg" (:value photo)))
         (is (= "A sunset over the sea" (:alt photo)))))))
 
+(deftest photo-only-post-returns-201
+  (with-redefs [auth/validate-token valid-token-stub
+                posts/create-post   success-note-stub]
+    (let [body (json/write-str {:type ["h-entry"]
+                                :properties {:photo ["https://chndr.cc/img/uploads/123-photo.jpg"]}})
+          request (-> (mock/request :post "/micropub")
+                      (mock/content-type "application/json")
+                      (mock/body body)
+                      (mock/header "Authorization" "Bearer valid-token"))
+          response (app request)]
+      (is (= 201 (:status response))))))
+
+(deftest photo-only-post-syndication-is-called
+  (let [syndicate-args (promise)]
+    (with-redefs [auth/validate-token          valid-token-stub
+                  posts/create-post            success-note-stub
+                  posts/syndicate-to-mastodon! (fn [args] (deliver syndicate-args args) nil)]
+      (let [body (json/write-str {:type ["h-entry"]
+                                  :properties {:photo ["https://chndr.cc/img/uploads/123-photo.jpg"]}})]
+        (app (-> (mock/request :post "/micropub")
+                 (mock/content-type "application/json")
+                 (mock/body body)
+                 (mock/header "Authorization" "Bearer valid-token"))))
+      (let [args (deref syndicate-args 500 :timeout)]
+        (is (not= :timeout args))
+        (is (= ["https://chndr.cc/img/uploads/123-photo.jpg"] (:photo args)))))))
+
 (deftest syndication-not-called-on-github-failure
   (let [called (atom false)]
     (with-redefs [auth/validate-token           valid-token-stub

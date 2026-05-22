@@ -63,13 +63,13 @@
       (if-not (auth/validate-token token)
         {:status 403 :body "Forbidden"}
         (let [{:keys [h name content photo bookmark-of] :as params} (extract-params request)]
-          (if (and (str/blank? content) (not bookmark-of))
+          (if (and (str/blank? content) (not bookmark-of) (not (seq photo)))
             {:status 400 :body "Bad Request: missing content"}
             (let [result (posts/create-post {:name name :content content :photo photo :bookmark-of bookmark-of})]
               (if (= :created (:status result))
                 (let [type        (post-type params)
                       syn-content (syndication-content type params (:url result))]
-                  (when syn-content
+                  (when (or syn-content (seq photo))
                     (let [syndicate! posts/syndicate-to-mastodon!
                           update!    posts/update-syndication!]
                       (future
