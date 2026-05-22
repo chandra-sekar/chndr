@@ -310,16 +310,15 @@
         (is (= ["https://chndr.cc/img/uploads/123-photo.jpg"] (:photo args)))))))
 
 (deftest syndication-not-called-on-github-failure
-  (let [called (atom false)]
+  (let [called (promise)]
     (with-redefs [auth/validate-token           valid-token-stub
                   posts/create-post             github-error-stub
-                  posts/syndicate-to-mastodon!  (fn [_] (reset! called true))]
+                  posts/syndicate-to-mastodon!  (fn [_] (deliver called true))]
       (app (-> (mock/request :post "/micropub")
                (mock/content-type "application/x-www-form-urlencoded")
                (mock/body "h=entry&content=Hello")
                (mock/header "Authorization" "Bearer valid-token")))
-      (Thread/sleep 100)
-      (is (false? @called)))))
+      (is (= :not-called (deref called 200 :not-called))))))
 
 (deftest update-syndication-called-with-path-and-mastodon-url
   (let [update-args (promise)]
@@ -337,14 +336,13 @@
         (is (= "https://mastodon.social/@chander/999" (:url args)))))))
 
 (deftest update-syndication-not-called-when-bridgy-returns-nil
-  (let [called (atom false)]
+  (let [called (promise)]
     (with-redefs [auth/validate-token           valid-token-stub
                   posts/create-post             success-note-stub
                   posts/syndicate-to-mastodon!  (fn [_] nil)
-                  posts/update-syndication!     (fn [_ _] (reset! called true))]
+                  posts/update-syndication!     (fn [_ _] (deliver called true))]
       (app (-> (mock/request :post "/micropub")
                (mock/content-type "application/x-www-form-urlencoded")
                (mock/body "h=entry&content=Hello+world")
                (mock/header "Authorization" "Bearer valid-token")))
-      (Thread/sleep 100)
-      (is (false? @called)))))
+      (is (= :not-called (deref called 200 :not-called))))))

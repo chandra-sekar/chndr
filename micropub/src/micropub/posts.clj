@@ -24,6 +24,10 @@
 (defn- iso-now []
   (str (Instant/now)))
 
+(defn- github-token []
+  (or (System/getenv "GITHUB_TOKEN")
+      (throw (ex-info "GITHUB_TOKEN env var not set" {}))))
+
 (defn build-note
   ([content] (build-note content nil nil nil))
   ([content photos] (build-note content photos nil nil))
@@ -58,7 +62,7 @@
     {:path path :url url :message (str "Add media via micropub: " name)}))
 
 (defn commit-media [{:keys [filename tempfile]}]
-  (let [github-token (System/getenv "GITHUB_TOKEN")
+  (let [github-token (github-token)
         {:keys [path url message]} (build-media filename)
         payload (json/write-str {:message message
                                  :content (base64-bytes (Files/readAllBytes (.toPath tempfile)))
@@ -75,7 +79,7 @@
       {:status :error :http-status status})))
 
 (defn create-post [{:keys [name content photo bookmark-of]}]
-  (let [github-token (System/getenv "GITHUB_TOKEN")
+  (let [github-token (github-token)
         {:keys [path body url message]} (cond
                                           bookmark-of       (build-note content photo bookmark-of name)
                                           (str/blank? name) (build-note content photo)
@@ -95,11 +99,13 @@
       {:status :error :http-status status})))
 
 (defn- add-syndication [file-content mastodon-url]
-  (let [[_ frontmatter body] (str/split file-content #"---\n" 3)]
-    (str "---\n" frontmatter "syndication: " mastodon-url "\n---\n" body)))
+  (let [second-delim (str/index-of file-content "---\n" 4)]
+    (str (subs file-content 0 second-delim)
+         "syndication: " mastodon-url "\n"
+         (subs file-content second-delim))))
 
 (defn update-syndication! [path mastodon-url]
-  (let [github-token (System/getenv "GITHUB_TOKEN")
+  (let [github-token (github-token)
         {:keys [body]} @(http/get (str github-api "/repos/" repo "/contents/" path)
                                   {:headers {"Authorization" (str "Bearer " github-token)
                                              "Accept" "application/vnd.github+json"
@@ -111,14 +117,16 @@
         payload  (json/write-str {:message "Add syndication link"
                                   :content (base64 updated)
                                   :sha     sha
-                                  :branch  "master"})]
-    @(http/put (str github-api "/repos/" repo "/contents/" path)
-               {:headers {"Authorization" (str "Bearer " github-token)
-                          "Content-Type" "application/json"
-                          "Accept" "application/vnd.github+json"
-                          "X-GitHub-Api-Version" "2022-11-28"}
-                :body    payload
-                :timeout 10000})))
+                                  :branch  "master"})
+        {:keys [status]} @(http/put (str github-api "/repos/" repo "/contents/" path)
+                                    {:headers {"Authorization" (str "Bearer " github-token)
+                                               "Content-Type" "application/json"
+                                               "Accept" "application/vnd.github+json"
+                                               "X-GitHub-Api-Version" "2022-11-28"}
+                                     :body    payload
+                                     :timeout 10000})]
+    (when-not (#{200 201} status)
+      (println (str "update-syndication! failed: HTTP " status)))))
 
 (defn syndicate-to-mastodon! [{:keys [content name photo]}]
   (when-let [token (System/getenv "BRIDGY_MASTODON_TOKEN")]
