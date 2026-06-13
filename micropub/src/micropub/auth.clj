@@ -2,7 +2,7 @@
   (:require [clojure.data.json :as json]
             [org.httpkit.client :as http]))
 
-(def me-url "https://chndr.cc")
+(def me-url "https://chndr.me")
 
 (defn- normalize-url [url]
   (some-> url clojure.string/trim (clojure.string/replace #"/$" "")))

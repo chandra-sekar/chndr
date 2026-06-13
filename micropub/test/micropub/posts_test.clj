@@ -23,7 +23,7 @@
 
 (deftest note-url-points-to-notes
   (let [{:keys [url]} (build-note "Hello world")]
-    (is (str/starts-with? url "https://chndr.cc/notes/"))))
+    (is (str/starts-with? url "https://chndr.me/notes/"))))
 
 (deftest note-url-ends-with-slash
   (let [{:keys [url]} (build-note "Hello world")]
@@ -58,7 +58,7 @@
     (is (str/includes? body "bookmark-of: https://example.com/article"))))
 
 (deftest note-with-bookmark-and-photo-contains-both
-  (let [{:keys [body]} (build-note "Great read" ["https://chndr.cc/img/uploads/1-a.jpg"] "https://example.com")]
+  (let [{:keys [body]} (build-note "Great read" ["https://chndr.me/img/uploads/1-a.jpg"] "https://example.com")]
     (is (str/includes? body "photo:"))
     (is (str/includes? body "bookmark-of: https://example.com"))))
 
@@ -71,26 +71,26 @@
     (is (not (str/includes? body "name:")))))
 
 (deftest note-with-photo-includes-photo-frontmatter
-  (let [{:keys [body]} (build-note "Hello world" ["https://chndr.cc/img/uploads/123-photo.jpg"])]
+  (let [{:keys [body]} (build-note "Hello world" ["https://chndr.me/img/uploads/123-photo.jpg"])]
     (is (str/includes? body "photo:"))
-    (is (str/includes? body "  - url: https://chndr.cc/img/uploads/123-photo.jpg"))
+    (is (str/includes? body "  - url: https://chndr.me/img/uploads/123-photo.jpg"))
     (is (str/includes? body "    alt: \"\""))))
 
 (deftest note-with-multiple-photos-includes-all-urls
-  (let [{:keys [body]} (build-note "Hello world" ["https://chndr.cc/img/uploads/1-a.jpg"
-                                                   "https://chndr.cc/img/uploads/2-b.jpg"])]
-    (is (str/includes? body "  - url: https://chndr.cc/img/uploads/1-a.jpg"))
-    (is (str/includes? body "  - url: https://chndr.cc/img/uploads/2-b.jpg"))))
+  (let [{:keys [body]} (build-note "Hello world" ["https://chndr.me/img/uploads/1-a.jpg"
+                                                   "https://chndr.me/img/uploads/2-b.jpg"])]
+    (is (str/includes? body "  - url: https://chndr.me/img/uploads/1-a.jpg"))
+    (is (str/includes? body "  - url: https://chndr.me/img/uploads/2-b.jpg"))))
 
 (deftest note-with-photo-map-uses-value-as-url
-  (let [{:keys [body]} (build-note "Hello world" [{:value "https://chndr.cc/img/uploads/123-photo.jpg"
+  (let [{:keys [body]} (build-note "Hello world" [{:value "https://chndr.me/img/uploads/123-photo.jpg"
                                                     :alt "A description"}])]
-    (is (str/includes? body "  - url: https://chndr.cc/img/uploads/123-photo.jpg"))
+    (is (str/includes? body "  - url: https://chndr.me/img/uploads/123-photo.jpg"))
     (is (str/includes? body "    alt: \"A description\""))))
 
 (deftest note-with-photo-map-missing-alt-defaults-to-empty
-  (let [{:keys [body]} (build-note "Hello world" [{:value "https://chndr.cc/img/uploads/123-photo.jpg"}])]
-    (is (str/includes? body "  - url: https://chndr.cc/img/uploads/123-photo.jpg"))
+  (let [{:keys [body]} (build-note "Hello world" [{:value "https://chndr.me/img/uploads/123-photo.jpg"}])]
+    (is (str/includes? body "  - url: https://chndr.me/img/uploads/123-photo.jpg"))
     (is (str/includes? body "    alt: \"\""))))
 
 ;; ---------------------------------------------------------------------------
@@ -107,7 +107,7 @@
 
 (deftest article-url-points-to-posts
   (let [{:keys [url]} (build-article "My Article" "Body")]
-    (is (str/starts-with? url "https://chndr.cc/posts/"))))
+    (is (str/starts-with? url "https://chndr.me/posts/"))))
 
 (deftest article-url-ends-with-slash
   (let [{:keys [url]} (build-article "My Article" "Body")]
@@ -170,7 +170,7 @@
 
 (deftest media-url-points-to-img-uploads
   (let [{:keys [url]} (build-media "photo.jpg")]
-    (is (str/starts-with? url "https://chndr.cc/img/uploads/"))))
+    (is (str/starts-with? url "https://chndr.me/img/uploads/"))))
 
 (deftest media-url-does-not-end-with-slash
   (let [{:keys [url]} (build-media "photo.jpg")]

@@ -48,7 +48,7 @@
          name-yaml     (when bookmark-name (str "name: " bookmark-name "\n"))
          body (str "---\ndate: " date "\n" (or photo-yaml "") (or bookmark-yaml "") (or name-yaml "") "---\n" content "\n")
          path (str "notes/" ts ".md")
-         url  (str "https://chndr.cc/notes/" ts "/")]
+         url  (str "https://chndr.me/notes/" ts "/")]
      {:path path :body body :url url
       :message "Add note via micropub"})))
 
@@ -57,7 +57,7 @@
         date (iso-now)
         body (str "---\ntitle: " name "\ndate: " date "\nlayout: layouts/post.njk\n---\n" content "\n")
         path (str "posts/" slug ".md")
-        url (str "https://chndr.cc/posts/" slug "/")]
+        url (str "https://chndr.me/posts/" slug "/")]
     {:path path :body body :url url
      :message (str "Add article via micropub: " name)}))
 
@@ -65,7 +65,7 @@
   (let [ts   (quot (System/currentTimeMillis) 1000)
         name (str ts "-" filename)
         path (str "img/uploads/" name)
-        url  (str "https://chndr.cc/img/uploads/" name)]
+        url  (str "https://chndr.me/img/uploads/" name)]
     {:path path :url url :message (str "Add media via micropub: " name)}))
 
 (defn commit-media [{:keys [filename tempfile]}]

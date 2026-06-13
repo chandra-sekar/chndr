@@ -13,13 +13,13 @@
                   posts/update-syndication!    (fn [_ _] nil)]
       (f))))
 
-(defn- valid-token-stub [_token] {:me "https://chndr.cc"})
+(defn- valid-token-stub [_token] {:me "https://chndr.me"})
 (defn- invalid-token-stub [_token] nil)
-(defn- success-note-stub [_] {:status :created :url "https://chndr.cc/notes/1234567890/" :path "notes/1234567890.md"})
-(defn- success-article-stub [_] {:status :created :url "https://chndr.cc/posts/my-title/" :path "posts/my-title.md"})
-(defn- success-bookmark-stub [_] {:status :created :url "https://chndr.cc/notes/1234567890/" :path "notes/1234567890.md"})
+(defn- success-note-stub [_] {:status :created :url "https://chndr.me/notes/1234567890/" :path "notes/1234567890.md"})
+(defn- success-article-stub [_] {:status :created :url "https://chndr.me/posts/my-title/" :path "posts/my-title.md"})
+(defn- success-bookmark-stub [_] {:status :created :url "https://chndr.me/notes/1234567890/" :path "notes/1234567890.md"})
 (defn- github-error-stub [_] {:status :error :http-status 422})
-(defn- success-media-stub [_] {:status :created :url "https://chndr.cc/img/uploads/123-photo.jpg"})
+(defn- success-media-stub [_] {:status :created :url "https://chndr.me/img/uploads/123-photo.jpg"})
 (defn- media-error-stub [_] {:status :error :http-status 422})
 
 (defn- media-request [auth file-map]
@@ -61,7 +61,7 @@
     (is (str/includes? (get body "media-endpoint") "/micropub/media"))))
 
 (deftest config-query-with-extra-params-still-returns-config
-  (let [response (app (mock/request :get "/micropub?q=config&me=https://chndr.cc"))]
+  (let [response (app (mock/request :get "/micropub?q=config&me=https://chndr.me"))]
     (is (= 200 (:status response)))
     (is (= "application/json" (get-in response [:headers "Content-Type"])))))
 
@@ -108,7 +108,7 @@
                       (mock/header "Authorization" "Bearer valid-token"))
           response (app request)]
       (is (clojure.string/starts-with? (get-in response [:headers "Location"])
-                                       "https://chndr.cc/notes/")))))
+                                       "https://chndr.me/notes/")))))
 
 (deftest form-article-location-header-points-to-posts
   (with-redefs [auth/validate-token valid-token-stub
@@ -119,7 +119,7 @@
                       (mock/header "Authorization" "Bearer valid-token"))
           response (app request)]
       (is (clojure.string/starts-with? (get-in response [:headers "Location"])
-                                       "https://chndr.cc/posts/")))))
+                                       "https://chndr.me/posts/")))))
 
 (deftest form-post-missing-content-returns-400
   (with-redefs [auth/validate-token valid-token-stub]
@@ -230,7 +230,7 @@
                 posts/commit-media  success-media-stub]
     (let [response (app (media-request "Bearer valid-token" fake-file))]
       (is (str/starts-with? (get-in response [:headers "Location"])
-                            "https://chndr.cc/img/uploads/")))))
+                            "https://chndr.me/img/uploads/")))))
 
 (deftest media-github-failure-returns-500
   (with-redefs [auth/validate-token valid-token-stub
@@ -273,7 +273,7 @@
                       (mock/header "Authorization" "Bearer valid-token"))
           response (app request)]
       (is (str/starts-with? (get-in response [:headers "Location"])
-                            "https://chndr.cc/notes/")))))
+                            "https://chndr.me/notes/")))))
 
 (deftest bookmark-with-name-still-routes-to-notes
   (with-redefs [auth/validate-token valid-token-stub
@@ -284,7 +284,7 @@
                       (mock/header "Authorization" "Bearer valid-token"))
           response (app request)]
       (is (str/starts-with? (get-in response [:headers "Location"])
-                            "https://chndr.cc/notes/")))))
+                            "https://chndr.me/notes/")))))
 
 ;; ---------------------------------------------------------------------------
 ;; Mastodon syndication
@@ -314,7 +314,7 @@
                (mock/header "Authorization" "Bearer valid-token")))
       (let [args (deref syndicate-args 500 :timeout)]
         (is (not= :timeout args))
-        (is (= "New post: My Title\n\nhttps://chndr.cc/posts/my-title/" (:content args)))))))
+        (is (= "New post: My Title\n\nhttps://chndr.me/posts/my-title/" (:content args)))))))
 
 (deftest bookmark-syndication-uses-content-and-bookmark-url
   (let [syndicate-args (promise)]
@@ -360,13 +360,13 @@
                   posts/syndicate-to-mastodon! (fn [args] (deliver syndicate-args args) nil)]
       (let [body (json/write-str {:type ["h-entry"]
                                   :properties {:content ["Hello with photo"]
-                                               :photo ["https://chndr.cc/img/uploads/123-photo.jpg"]}})]
+                                               :photo ["https://chndr.me/img/uploads/123-photo.jpg"]}})]
         (app (-> (mock/request :post "/micropub")
                  (mock/content-type "application/json")
                  (mock/body body)
                  (mock/header "Authorization" "Bearer valid-token"))))
       (let [args (deref syndicate-args 500 :timeout)]
-        (is (= ["https://chndr.cc/img/uploads/123-photo.jpg"] (:photo args)))))))
+        (is (= ["https://chndr.me/img/uploads/123-photo.jpg"] (:photo args)))))))
 
 (deftest syndication-passes-photo-alt-text
   (let [syndicate-args (promise)]
@@ -375,7 +375,7 @@
                   posts/syndicate-to-mastodon! (fn [args] (deliver syndicate-args args) nil)]
       (let [body (json/write-str {:type ["h-entry"]
                                   :properties {:content ["A photo with alt text"]
-                                               :photo [{:value "https://chndr.cc/img/uploads/123-photo.jpg"
+                                               :photo [{:value "https://chndr.me/img/uploads/123-photo.jpg"
                                                         :alt   "A sunset over the sea"}]}})]
         (app (-> (mock/request :post "/micropub")
                  (mock/content-type "application/json")
@@ -384,14 +384,14 @@
       (let [args  (deref syndicate-args 500 :timeout)
             photo (first (:photo args))]
         (is (not= :timeout args))
-        (is (= "https://chndr.cc/img/uploads/123-photo.jpg" (:value photo)))
+        (is (= "https://chndr.me/img/uploads/123-photo.jpg" (:value photo)))
         (is (= "A sunset over the sea" (:alt photo)))))))
 
 (deftest photo-only-post-returns-201
   (with-redefs [auth/validate-token valid-token-stub
                 posts/create-post   success-note-stub]
     (let [body (json/write-str {:type ["h-entry"]
-                                :properties {:photo ["https://chndr.cc/img/uploads/123-photo.jpg"]}})
+                                :properties {:photo ["https://chndr.me/img/uploads/123-photo.jpg"]}})
           request (-> (mock/request :post "/micropub")
                       (mock/content-type "application/json")
                       (mock/body body)
@@ -405,14 +405,14 @@
                   posts/create-post            success-note-stub
                   posts/syndicate-to-mastodon! (fn [args] (deliver syndicate-args args) nil)]
       (let [body (json/write-str {:type ["h-entry"]
-                                  :properties {:photo ["https://chndr.cc/img/uploads/123-photo.jpg"]}})]
+                                  :properties {:photo ["https://chndr.me/img/uploads/123-photo.jpg"]}})]
         (app (-> (mock/request :post "/micropub")
                  (mock/content-type "application/json")
                  (mock/body body)
                  (mock/header "Authorization" "Bearer valid-token"))))
       (let [args (deref syndicate-args 500 :timeout)]
         (is (not= :timeout args))
-        (is (= ["https://chndr.cc/img/uploads/123-photo.jpg"] (:photo args)))))))
+        (is (= ["https://chndr.me/img/uploads/123-photo.jpg"] (:photo args)))))))
 
 (deftest syndication-not-called-on-github-failure
   (let [called (atom false)]

@@ -1,7 +1,7 @@
 module.exports = async function () {
   const token = process.env.WEBMENTION_IO_TOKEN;
   if (!token) return {};
-  const url = `https://webmention.io/api/mentions.jf2?domain=chndr.cc&token=${token}&per-page=1000`;
+  const url = `https://webmention.io/api/mentions.jf2?domain=chndr.me&token=${token}&per-page=1000`;
   let data;
   try {
     const res = await fetch(url);
